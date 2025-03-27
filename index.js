@@ -1,7 +1,10 @@
-let test = {
-    name: "test",
-    age: 999,
-    isAdmin: true
-}
+const express = require('express');
+const app = express();
+const userRoutes = require('./routes/userRoutes');
 
-console.log(test.age);
+app.use('/users', userRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

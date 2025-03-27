@@ -19,5 +19,10 @@
   "bugs": {
     "url": "https://github.com/Troy2ooo/project-guessNumber/issues"
   },
-  "homepage": "https://github.com/Troy2ooo/project-guessNumber#readme"
+  "homepage": "https://github.com/Troy2ooo/project-guessNumber#readme",
+  "devDependencies": {
+    "@nestjs/testing": "^11.0.12",
+    "@types/jest": "^29.5.14",
+    "typescript": "^5.8.2"
+  }
 }
