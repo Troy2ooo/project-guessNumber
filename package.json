@@ -1,0 +1,23 @@
+{
+  "name": "project-guessnumber",
+  "version": "1.0.0",
+  "description": "\"Проект для угадывания чисел\".",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Troy2ooo/project-guessNumber.git"
+  },
+  "keywords": [
+    "\"game\""
+  ],
+  "author": "troy2000",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Troy2ooo/project-guessNumber/issues"
+  },
+  "homepage": "https://github.com/Troy2ooo/project-guessNumber#readme"
+}
