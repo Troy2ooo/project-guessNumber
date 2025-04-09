@@ -1,4 +1,4 @@
-const userModel = require('../models/userModel');
+const userModel = require('../models/user-model');
 
 function getUsers(req, res) {
   const users = userModel.getAllUsers();
@@ -10,5 +10,8 @@ function getUser(req, res) {
   res.json(user);
 };
 
+function createUser(req,res) {
+  const addUser =  userModel.postCreateUser()
+}
 
-module.exports = { getUsers, getUser };
+module.exports = { getUsers, getUser, createUser };

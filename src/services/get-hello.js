@@ -1,4 +1,4 @@
-function getHello(res, req) {
+function getHello(req, res) {
 res.send('Hello World')
 };
 
