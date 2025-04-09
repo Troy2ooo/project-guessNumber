@@ -1,18 +1,32 @@
-exports.getAllUsers = () => {
-    return [{ 
-      id: 1, name: 'Ilya', 
-      id: 2, name: 'Lisa',
-     }];
-  };
-  
-  exports.getOneUser = () => {
-    return [{
-      id: 1, name: 'Ilya',
-    }]
-  }
+exports.getUsers = () => {
+  return [
+    {
+      id: 1,
+      name: 'Ilya',
+    },
+    {
+      id: 2,
+      name: 'Lisa',
+    },
+  ];
+};
 
-  exports.postCreateUser = () => {
-    return [{
-      id: 100, name: 'new user',
-    }]
-  }
+exports.getUser = (userId) => {
+  console.log(userId, '<---'); // TODO: add DB logiv
+  return [
+    {
+      id: 1,
+      name: 'Ilya',
+    },
+  ];
+};
+
+exports.createUser = (userId, userName) => {
+  return [
+    {
+      id: userId,
+      name: userName,
+      createAt: new Date(),
+    },
+  ];
+};
