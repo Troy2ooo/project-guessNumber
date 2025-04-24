@@ -34,24 +34,21 @@ exports.createUser = async (userId, userName, userMail) => {
   }
 }
 
-  // return [ 
-  //   {
-  // id: userId,
-  // name: userName,
-  // createAt: new Date(),
-  //   }
-  // ];
 
 
 
-exports.deleteUserById = async (delUserId, mail) => {
+exports.deleteUserById = async (userId) => {
   // RETURNING * - какие данные должны быть возвращены после выполнения операции удаления. 
-  const query = "DELETE FROM users WHERE id = $1 AND mail = $2  RETURNING *";   // 'DELETE FROM users WHERE user_id = 3 RETURNING *'
-  const values = [ delUserId, mail ]
+  const query = "DELETE FROM users WHERE id = $1  RETURNING *";   // 'DELETE FROM users WHERE user_id = 3 RETURNING *'
+  const values = [ userId ]
+  try {
   const result = await pool.query(query,  values)
   // благодаря returning *, в логах result будет содержаться объект с удаленной записью
   console.log({ result })
   return result
+  } catch (err) {
+  console.error ('Error executing query', err);
+  }
 };
 
 

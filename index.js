@@ -7,11 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/probe', probeRoutes)
+app.use('/probe', probeRoutes);
 app.use('/users', userRoutes);
 
-
-app.delete('/users/:id/:mail', deleteUser);
+app.delete('/users/:id/', deleteUser);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

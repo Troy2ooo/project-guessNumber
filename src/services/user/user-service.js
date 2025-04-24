@@ -32,14 +32,11 @@ async function createUser(req, res) {
 }
 
 
- 
-
 
 function deleteUser(req,res) {
    const userId = req.params.id;
-   const mail = req.params.mail;
 
-   userModel.deleteUserById(userId, mail)
+   userModel.deleteUserById(userId)
    .then(deletedUser => {
      if (deletedUser) {
        res.json({ message: 'User deleted successfully', user: deletedUser });
