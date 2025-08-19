@@ -43,7 +43,7 @@ exports.deleteUserById = async (userId) => {
   const values = [ userId ]
   try {
   const result = await pool.query(query,  values)
-  // благодаря returning *, в логах result будет содержаться объект с удаленной записью
+  // благодаря returning *, в логах result будет содержаться объект с удаленной записью 
   console.log({ result })
   return result
   } catch (err) {
@@ -78,7 +78,6 @@ exports. updateUserMailById = async (newMail, userId) => {
     if (result.rowsCount === 0) {
       return null;
   }
-
   return result.rows[0]; 
   } catch (err) {
     console.error("Error executing query", err);
