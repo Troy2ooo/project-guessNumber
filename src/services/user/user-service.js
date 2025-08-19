@@ -48,27 +48,43 @@ function deleteUser(req,res) {
 
 
 
-function updateUserName (req,res) {
-  const {userId, newName } = req.body; 
-  userModel.updateUserNamebyId(newName, userId)
-  .then(function updatedUserName (result) {
-    if (result) {
-      res.status(200).json({ message: "User name updated", user: result });
-    } else {
-      res.status(404).json({ message: "User not found" });
-    }
-  })
-  .catch((err) => {
-    console.error("Error updating user name:", err);
-    res.status(500).json({ message: "Internal server error" });
-  });
-}
+// function updateUserName (req,res) {
+//   const {userId, newName } = req.body; 
+//   userModel.updateUserNamebyId(newName, userId)
+//   .then((result) => {
+//     if (result) {
+//       res.status(200).json({ message: "User name updated", user: result });
+//     } else {
+//       res.status(404).json({ message: "User not found" });
+//     }
+//   })
+//   .catch((err) => {
+//     console.error("Error updating user name:", err);
+//     res.status(500).json({ message: "Internal server error" });
+//   });
+// }
+
+async function updateUserName(req, res) {
+  try {
+  const { userId, newName } = req.body;
+  const result = userModel.updateUserNamebyId(newName, userId);
+  
+  if (!result) {
+  res.status(404).json({ message: 'User not found' });
+  }
+  
+  res.status(200).json({ message: 'User name updated', user: result });
+  } catch (error) {
+  console.error('Error updating user name:', err);
+  res.status(500).json({ message: 'Internal server error' });
+  }
+  }
 
 
 function updateUserMail (req,res) {
   const { userId, newMail } = req.body;
 userModel.updateUserMailById(newMail, userId)
-.then(function updatedUserMail (result) {
+.then((result) => {
 if (result) {
   res.status(200).json({ message: "User email updated", user: result });
     } else {
