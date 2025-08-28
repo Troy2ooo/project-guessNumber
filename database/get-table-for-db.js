@@ -1,8 +1,8 @@
-const db = require('../../../db');
+const db = require('../db');
 
 async function createTables() {
-    try {
-      await db.query(`
+  try {
+    await db.query(`
         CREATE TABLE IF NOT EXISTS books (
           id SERIAL PRIMARY KEY,
           title VARCHAR(255) NOT NULL,
@@ -23,12 +23,12 @@ async function createTables() {
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
       `);
-      console.log("Таблицы созданы");
-    } catch (error) {
-      console.error("Ошибка создания таблиц:", error);
-    }
+    console.log("Таблицы созданы");
+  } catch (error) {
+    console.error("Ошибка создания таблиц:", error);
   }
-  
-  createTables();
+}
+
+createTables();
 
 //   exports.createTables = createTables;

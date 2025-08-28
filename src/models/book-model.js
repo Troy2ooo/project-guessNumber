@@ -1,47 +1,42 @@
-const pool = require ('../../db')
+const pool = require('../../db');
 
-// exports.getBooks = () => {
-//     return [
-//         {
-//         id: ?
-//         }
-//     ]
+exports.getAllBooks = async () => {
+  const query = 'SELECT * FROM books';
 
-// }
+  const result = await pool.query(query);
+  console.log({ result });
 
-exports.getOneBook = () => {
-        return [
-            {
-            id: 1
-            }
-        ]
-    
-    }
+  return result.rows[0];
+};
 
+exports.getBook = async (bookId) => {
+  const query = 'SELECT * FROM books WHERE id = $1;';
+  const value = [bookId];
 
-exports.createBook = async (bookId, bookTitle, bookDescription, bookAvailable) => {
-    const query = "INSERT INTO books (id, title, description, available) values ($1, $2, $3, $4) RETURNING * ";
-    const values = [bookId, bookTitle, bookDescription, bookAvailable];
-    try {
-    const result = await pool.query(query, values)
-    console.log({ result })
-    return result.rows[0]
-    } catch (err) {
-      console.error('Error executing query', err);
-    }
-  }
+  const result = await pool.query(query, value);
+  console.log({ result });
 
+  return result.rows[0];
+};
 
-  exports.deleteBookById = async (bookId) => {
-    const query = "DELETE FROM books WHERE id = $1  RETURNING *"; 
-    const values = [ bookId ]
-    try {
-    const result = await pool.query(query,  values)
+exports.createBook = async (bookTitle, bookDescription, bookAvailable = true) => {
+  console.log({ bookTitle, bookDescription, bookAvailable });
+  const query = 'INSERT INTO books (title, description, available) values ($1, $2, $3) RETURNING * ;';
+  const values = [bookTitle, bookDescription, bookAvailable];
 
-    console.log({ result })
-    return result
-    } catch (err) {
-    console.error ('Error executing query', err);
-    }
-  };
+  const result = await pool.query(query, values);
+  console.log({ result });
 
+  return result.rows[0];
+};
+
+exports.deleteBookById = async (bookId) => {
+  const query = 'DELETE FROM books WHERE id = $1  RETURNING *';
+  const values = [bookId];
+  const result = await pool.query(query, values);
+
+  console.log({ result });
+  return result;
+};
+
+// TODO преобразовать стрелочные функции в function declaration
