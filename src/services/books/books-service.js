@@ -1,5 +1,6 @@
 const bookModel = require('../../models/book-model');
 
+
 async function getAllBooks(req, res) {
   try {
     const books = await bookModel.getAllBooks();
@@ -9,6 +10,7 @@ async function getAllBooks(req, res) {
     res.status(500).json({ message: 'Error getting books', error: error.message });
   }
 }
+
 
 async function getOneBook(req, res) {
   const bookId = req.params.id;
@@ -21,6 +23,7 @@ async function getOneBook(req, res) {
     res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 }
+
 
 async function createBook(req, res) {
   const book = {
@@ -37,6 +40,7 @@ async function createBook(req, res) {
     res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 }
+
 
 async function deleteBook(req, res) {
   const bookId = req.params.id;

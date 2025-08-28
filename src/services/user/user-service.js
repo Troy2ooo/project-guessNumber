@@ -1,16 +1,25 @@
 const userModel = require('../../models/user-model');
 
-function getAllUsers(req, res) {
-  const users = userModel.getUsers();
+async function getAllUsers(req, res) {
+  try {
+  const users = await userModel.getUsers();
   res.json(users);
+} catch (error) {
+  res.status(500).json({ message: 'Error getting all users' })
 }
+};
 
-function getOneUser(req, res) {
+async function getOneUser(req, res) {
   const userId = req.params.user_id;
+  try {
   console.log(userId);
-  const user = userModel.getUser(userId);
+  const user = await userModel.getUser(userId);
   res.json(user);
-}
+  }
+  catch (error) {
+    res.status(500).json({ message: 'Error getting user', error: error.message });
+  } 
+};
 
 async function createUser(req, res) {
  
@@ -33,17 +42,19 @@ async function createUser(req, res) {
 
 
 
-function deleteUser(req,res) {
+async function deleteUser(req,res) {
    const userId = req.params.id;
-
-   userModel.deleteUserById(userId)
-   .then(deletedUser => {
+   try {
+  const deletedUser = await userModel.deleteUserById(userId)
+   
      if (deletedUser) {
        res.json({ message: 'User deleted successfully', user: deletedUser });
      } else {
        res.status(404).json({ message: 'User not found' });
      }
-   })
+   } catch (error) {
+    res.status(500).json({ message: 'Error deleting user', error: error.message });
+   }
 }
 
 
@@ -67,34 +78,36 @@ function deleteUser(req,res) {
 async function updateUserName(req, res) {
   try {
   const { userId, newName } = req.body;
-  const result = userModel.updateUserNamebyId(newName, userId);
+  const result = await userModel.updateUserNamebyId(newName, userId);
   
   if (!result) {
   res.status(404).json({ message: 'User not found' });
   }
   
   res.status(200).json({ message: 'User name updated', user: result });
-  } catch (error) {
+  } 
+  catch (error) {
   console.error('Error updating user name:', err);
   res.status(500).json({ message: 'Internal server error' });
-  }
+    };
   }
 
 
-function updateUserMail (req,res) {
+async function updateUserMail (req,res) {
+  try {
   const { userId, newMail } = req.body;
-userModel.updateUserMailById(newMail, userId)
-.then((result) => {
+const result = await userModel.updateUserMailById(newMail, userId);
+
 if (result) {
   res.status(200).json({ message: "User email updated", user: result });
     } else {
       res.status(404).json({ message: "User not found" });
     }
-  })
-  .catch((err) => {
+  }
+  catch (err) {
     console.error("Error updating user name:", err);
     res.status(500).json({ message: "Internal server error" });
-  });
+  };
 }
 
 
