@@ -6,10 +6,9 @@ exports.getUsers = async function getAllUsers () {
   const result = await pool.query(query);
   console.log({ result });
 
-  return result.rows[0];
+  return result.rows;
 };
 
-// why only id:2 ?
 
 exports.getUser = async function (userId) {
   const query = 'SELECT * FROM users WHERE id = $1;';

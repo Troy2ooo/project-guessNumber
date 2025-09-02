@@ -12,7 +12,7 @@ async function getAllBooks(req, res) {
 }
 
 
-async function getOneBook(req, res) {
+async function getBook(req, res) {
   const bookId = req.params.id;
 
   try {
@@ -42,10 +42,10 @@ async function createBook(req, res) {
 }
 
 
-async function deleteBook(req, res) {
+async function deleteBook (req, res) {
   const bookId = req.params.id;
 
-  const deletedBook = await bookModel.deleteBookById(bookId);
+  const deletedBook = await bookModel.deleteBook (bookId);
 
   if (deletedBook) {
     res.json({ message: 'Book deleted successfully', book: deletedBook });
@@ -54,4 +54,4 @@ async function deleteBook(req, res) {
   }
 }
 
-module.exports = { getAllBooks, getOneBook, createBook, deleteBook };
+module.exports = { getAllBooks, getBook, createBook, deleteBook };
