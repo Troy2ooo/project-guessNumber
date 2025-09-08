@@ -42,6 +42,16 @@ async function createTables() {
         );
 
 
+        CREATE TABLE IF NOT EXISTS book_loans (
+          id SERIAL PRIMARY KEY,
+          book_id INT NOT NULL,
+          user_id INT NOT NULL,
+          taken_at TIMESTAMP NOT NULL,
+          returned_at TIMESTAMP,
+          FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
 
       `);
     console.log("Таблицы созданы");
