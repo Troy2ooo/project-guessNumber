@@ -1,5 +1,6 @@
 const pool = require('../../db');
 
+
   async function getAllBooks () {
   const query = 'SELECT * FROM books';
 
@@ -8,6 +9,29 @@ const pool = require('../../db');
 
   return result.rows;
 };
+
+
+async function getAllBooksWithAuthors() {
+  const query = `
+      SELECT 
+        b.id AS book_id,
+        b.title,
+        b.description,
+        json_agg(
+          DISTINCT jsonb_build_object(
+            'id', a.id,
+            'name', a.name,
+            'bio', a.bio
+          )
+        ) FILTER (WHERE a.id IS NOT NULL) AS authors
+      FROM books b
+      LEFT JOIN books_authors ba ON b.id = ba.book_id
+      LEFT JOIN authors a ON ba.author_id = a.id
+      GROUP BY b.id;
+    `;
+    const result = await pool.query(query);
+    return result.rows;
+  };
 
 
   async function getBook (bookId) {
@@ -20,6 +44,34 @@ const pool = require('../../db');
   return result.rows[0];
 };
 
+
+
+async function getBookWithAuthorById(bookId) {
+  const query = `
+    SELECT 
+      b.id AS book_id,
+      b.title,
+      b.description,
+      json_agg(
+        json_build_object(
+          'id', a.id,
+          'name', a.name,
+          'bio', a.bio
+        )
+      ) AS authors
+    FROM books b
+    JOIN books_authors ba ON b.id = ba.book_id
+    JOIN authors a ON ba.author_id = a.id
+    WHERE b.id = $1
+    GROUP BY b.id;
+  `;
+  const result = await pool.query(query, [bookId]);
+  return result.rows[0];
+}
+
+
+
+
   async function createBook (bookTitle, bookDescription, bookAvailable = true) {
   console.log({ bookTitle, bookDescription, bookAvailable });
   const query = 'INSERT INTO books (title, description, available) values ($1, $2, $3) RETURNING * ;';
@@ -31,6 +83,7 @@ const pool = require('../../db');
   return result.rows[0];
 };
 
+
   async function deleteBook (bookId) {
   const query = 'DELETE FROM books WHERE id = $1  RETURNING *';
   const values = [bookId];
@@ -40,4 +93,7 @@ const pool = require('../../db');
   return result;
 };
 
-module.exports = { getAllBooks, getBook, createBook, deleteBook };
+
+
+
+module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthorById, createBook, deleteBook };

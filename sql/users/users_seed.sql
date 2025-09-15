@@ -1,0 +1,22 @@
+INSERT INTO users (username, email, password_hash, role)
+VALUES
+('user1', 'user1@example.com', 'password1', 'user'),
+('user2', 'user2@example.com', 'password2', 'user'),
+('user3', 'user3@example.com', 'password3', 'user'),
+('user4', 'user4@example.com', 'password4', 'user'),
+('user5', 'user5@example.com', 'password5', 'user'),
+('user6', 'user6@example.com', 'password6', 'user'),
+('user7', 'user7@example.com', 'password7', 'user'),
+('user8', 'user8@example.com', 'password8', 'user'),
+('user9', 'user9@example.com', 'password9', 'user'),
+('user10', 'user10@example.com', 'password10', 'user'),
+('user11', 'user11@example.com', 'password11', 'user'),
+('user12', 'user12@example.com', 'password12', 'user'),
+('user13', 'user13@example.com', 'password13', 'user'),
+('user14', 'user14@example.com', 'password14', 'user'),
+('user15', 'user15@example.com', 'password15', 'user'),
+('user16', 'user16@example.com', 'password16', 'user'),
+('user17', 'user17@example.com', 'password17', 'user'),
+('user18', 'user18@example.com', 'password18', 'user'),
+('user19', 'user19@example.com', 'password19', 'user'),
+('user20', 'user20@example.com', 'password20', 'user');

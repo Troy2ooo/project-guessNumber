@@ -12,6 +12,18 @@ async function getAllBooks(req, res) {
 }
 
 
+async function getAllBooksWithAuthors(req, res) {
+  try {
+    const books = await bookModel.getAllBooksWithAuthors();
+
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting books', error: error.message });
+  }
+}
+
+
+
 async function getBook(req, res) {
   const bookId = req.params.id;
 
@@ -23,6 +35,25 @@ async function getBook(req, res) {
     res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 }
+
+
+
+async function getBookWithAuthor(req, res) {
+  try {
+    const bookId = req.params.id;
+    const book = await bookModel.getBookWithAuthorById(bookId);
+
+    if (!book) {
+      return res.status(404).json({ error: "Книга не найдена" });
+    }
+
+    res.json(book);
+  } catch (err) {
+    console.error("Ошибка при получении книги:", err);
+    res.status(500).json({ error: "Ошибка при получении книги" });
+  }
+}
+
 
 
 async function createBook(req, res) {
@@ -54,4 +85,4 @@ async function deleteBook (req, res) {
   }
 }
 
-module.exports = { getAllBooks, getBook, createBook, deleteBook };
+module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthor, createBook, deleteBook };
