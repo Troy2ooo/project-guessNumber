@@ -1,0 +1,22 @@
+INSERT INTO book_loans (book_id, user_id, taken_at, returned_at)
+VALUES
+(1, 1, NOW(), NULL),
+(2, 2, NOW(), NULL),
+(3, 3, NOW(), NULL),
+(4, 4, NOW(), NULL),
+(5, 5, NOW(), NULL),
+(6, 6, NOW(), NULL),
+(7, 7, NOW(), NULL),
+(8, 8, NOW(), NULL),
+(9, 9, NOW(), NULL),
+(10, 10, NOW(), NULL),
+(11, 11, NOW(), NULL),
+(12, 12, NOW(), NULL),
+(13, 13, NOW(), NULL),
+(14, 14, NOW(), NULL),
+(15, 15, NOW(), NULL),
+(16, 16, NOW(), NULL),
+(17, 17, NOW(), NULL),
+(18, 18, NOW(), NULL),
+(19, 19, NOW(), NULL),
+(20, 20, NOW(), NULL);
