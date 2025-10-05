@@ -18,17 +18,34 @@ exports.getUser = async function (userId) {
   console.log({ result });
 
   return result.rows[0];
+
 };
 
-exports.createUser = async function createUser (userId, userName, userMail) {
-  const query = 'INSERT INTO users (id, name, mail) values ($1, $2, $3) RETURNING * ';
-  const values = [userId, userName, userMail];
+
+
+
+exports.getUserByName = async function (userName) {
+  const query = 'SELECT * FROM users WHERE username = $1;'
+  const value = [userName];
+
+  const result = await pool.query(query,value)
+  console.log(result.rows);
+
+  return result.rows[0];
+}
+
+
+
+exports.createUser = async function createUser (userName, userEmail, password_hash, role = 'user') {
+  const query = 'INSERT INTO users (username, email, password_hash, role ) values ($1, $2, $3, $4) RETURNING * ';
+  const values = [userName, userEmail, password_hash, role];
   try {
     const result = await pool.query(query, values);
     return result.rows[0];
   } catch (err) {
     console.error('Error executing query', err);
   }
+  throw err;
 };
 
 exports.deleteUserById = async function deleteUser (userId) {
