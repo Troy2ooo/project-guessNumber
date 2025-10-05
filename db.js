@@ -18,4 +18,7 @@ pool.connect((err, client, release) => {
   }
 });
 
+console.log('Подключение к базе данных:', process.env.DB_NAME);
+
+
 module.exports = pool;
