@@ -85,4 +85,35 @@ async function deleteBook (req, res) {
   }
 }
 
-module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthor, createBook, deleteBook };
+
+
+async function updateBookStatus(req, res) {
+  try {
+    const bookId = req.params.id;
+    const { available } = req.body;
+
+    if (typeof available !== 'boolean') {
+      return res.status(400).json({ error: 'available must be a boolean (true/false)' });
+    }
+
+    const updatedBook = await bookModel.updateBookStatus(bookId, available);
+
+    if (!updatedBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    res.json({
+      message: `Book ${bookId} status updated successfully`,
+      book: updatedBook,
+    });
+    
+  } catch (error) {
+    console.error('updateBookStatus error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+
+
+
+module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthor, createBook, deleteBook, updateBookStatus };

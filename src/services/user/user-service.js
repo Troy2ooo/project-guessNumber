@@ -1,6 +1,7 @@
-const userModel = require('../../models/user-model');
-const bcrypt = require('bcrypt');
+
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const userModel = require('../../models/user-model');
 
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
@@ -134,7 +135,8 @@ async function registerUser(req, res) {
 
 
     const existsByName = await userModel.getUserByName(userName);
-    if (existsByName) return res.status(400).json({ error: 'username already taken' });
+    if (existsByName) 
+      return res.status(400).json({ error: 'username already taken' });
 
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
 
@@ -147,7 +149,8 @@ async function registerUser(req, res) {
     });
   } catch (err) {
     console.error('registerUser error', err);
-    if (err.code === '23505') return res.status(400).json({ error: 'User exists' });
+    if (err.code === '23505') 
+      return res.status(400).json({ error: 'User exists' });
     return res.status(500).json({ error: 'Server error' });
   }
 }
@@ -163,10 +166,12 @@ async function loginUser(req, res) {
     let user = await userModel.getUserByName(userName);
    
 
-    if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+    if (!user) 
+      return res.status(400).json({ error: 'Invalid credentials' });
 
     const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) return res.status(400).json({ error: 'Invalid credentials' });
+    if (!valid) 
+      return res.status(400).json({ error: 'Invalid credentials' });
 
     const payLoad = { id: user.id, username: user.username, role: user.role };
     const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' });
