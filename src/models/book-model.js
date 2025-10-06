@@ -95,5 +95,30 @@ async function getBookWithAuthorById(bookId) {
 
 
 
+async function updateBookStatus (book_id, isAvailable) {
+  const query = `
+  UPDATE books
+    SET available = $2,
+        updated_at = NOW()
+    WHERE id = $1
+    RETURNING *;
+    `;
+    const values = [book_id, isAvailable];
 
-module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthorById, createBook, deleteBook };
+    try {
+      const result = await pool.query(query,values);
+      if (result.rows.length === 0) {
+        console.warn(`Book with ID ${book_id} nit found`);
+        return null
+      }
+      return result.rows[0];
+    } catch (err) {
+      console.error('Error updating book status:', err);
+      throw err;
+    }
+};
+
+
+
+
+module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthorById, createBook, deleteBook, updateBookStatus };
