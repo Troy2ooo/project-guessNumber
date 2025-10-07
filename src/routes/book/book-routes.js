@@ -9,7 +9,6 @@ router.get('/', bookService.getAllBooks);
 router.get('/:id', bookService.getBook);
 router.post('/', bookService.createBook);
 router.delete('/:id', bookService.deleteBook);
-
-
+router.put('/:id/status', bookService.updateBookStatus);
 
 module.exports = router;
