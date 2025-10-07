@@ -1,5 +1,5 @@
 const express = require('express');
-const authorsService = require('../../services/authors/authors-service');
+const authorsService = require('../../services/authors-service/authors-service');
 const router = express.Router();
 
 router.get('/', authorsService.getAllAuthors);
