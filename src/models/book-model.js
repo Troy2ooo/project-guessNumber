@@ -1,15 +1,11 @@
 const pool = require('../../db');
 
-
-  async function getAllBooks () {
+async function getAllBooks() {
   const query = 'SELECT * FROM books';
-
   const result = await pool.query(query);
-  console.log({ result });
 
   return result.rows;
-};
-
+}
 
 async function getAllBooksWithAuthors() {
   const query = `
@@ -29,12 +25,12 @@ async function getAllBooksWithAuthors() {
       LEFT JOIN authors a ON ba.author_id = a.id
       GROUP BY b.id;
     `;
-    const result = await pool.query(query);
-    return result.rows;
-  };
+  const result = await pool.query(query);
 
+  return result.rows;
+}
 
-  async function getBook (bookId) {
+async function getBook(bookId) {
   const query = 'SELECT * FROM books WHERE id = $1;';
   const value = [bookId];
 
@@ -42,9 +38,7 @@ async function getAllBooksWithAuthors() {
   console.log({ result });
 
   return result.rows[0];
-};
-
-
+}
 
 async function getBookWithAuthorById(bookId) {
   const query = `
@@ -69,10 +63,7 @@ async function getBookWithAuthorById(bookId) {
   return result.rows[0];
 }
 
-
-
-
-  async function createBook (bookTitle, bookDescription, bookAvailable = true) {
+async function createBook(bookTitle, bookDescription, bookAvailable = true) {
   console.log({ bookTitle, bookDescription, bookAvailable });
   const query = 'INSERT INTO books (title, description, available) values ($1, $2, $3) RETURNING * ;';
   const values = [bookTitle, bookDescription, bookAvailable];
@@ -81,21 +72,18 @@ async function getBookWithAuthorById(bookId) {
   console.log({ result });
 
   return result.rows[0];
-};
+}
 
-
-  async function deleteBook (bookId) {
+async function deleteBook(bookId) {
   const query = 'DELETE FROM books WHERE id = $1  RETURNING *';
   const values = [bookId];
   const result = await pool.query(query, values);
 
   console.log({ result });
   return result;
-};
+}
 
-
-
-async function updateBookStatus (book_id, isAvailable) {
+async function updateBookStatus(book_id, isAvailable) {
   const query = `
   UPDATE books
     SET available = $2,
@@ -103,22 +91,27 @@ async function updateBookStatus (book_id, isAvailable) {
     WHERE id = $1
     RETURNING *;
     `;
-    const values = [book_id, isAvailable];
+  const values = [book_id, isAvailable];
 
-    try {
-      const result = await pool.query(query,values);
-      if (result.rows.length === 0) {
-        console.warn(`Book with ID ${book_id} nit found`);
-        return null
-      }
-      return result.rows[0];
-    } catch (err) {
-      console.error('Error updating book status:', err);
-      throw err;
+  try {
+    const result = await pool.query(query, values);
+    if (result.rows.length === 0) {
+      console.warn(`Book with ID ${book_id} nit found`);
+      return null;
     }
+    return result.rows[0];
+  } catch (err) {
+    console.error('Error updating book status:', err);
+    throw err;
+  }
+}
+
+module.exports = {
+  getAllBooks,
+  getAllBooksWithAuthors,
+  getBook,
+  getBookWithAuthorById,
+  createBook,
+  deleteBook,
+  updateBookStatus,
 };
-
-
-
-
-module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthorById, createBook, deleteBook, updateBookStatus };

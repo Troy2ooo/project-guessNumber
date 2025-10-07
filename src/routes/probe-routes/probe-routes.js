@@ -1,6 +1,6 @@
 const express = require('express');
-const { getHello } = require('../../services/probe/get-hello');
-const { getTime } = require('../../services/probe/get-time-for-db');
+const { getHello } = require('../../services/probe-service/get-hello');
+const { getTime } = require('../../services/probe-service/get-time-for-db');
 
 const router = express.Router();
 

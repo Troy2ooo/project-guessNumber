@@ -1,12 +1,9 @@
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const userModel = require('../../../models/user-model');
+const userModel = require('../../models/user-model');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
-
-
 
 // Регистрация
 async function registerUser(req, res) {
@@ -20,8 +17,10 @@ async function registerUser(req, res) {
 
     // Проверяем, есть ли уже пользователь с таким username
     const existsByName = await userModel.getUserByName(username);
-    if (existsByName) 
+
+    if (existsByName) {
       return res.status(400).json({ error: 'username already taken' });
+    }
 
     // Генерируем безопасный хэш пароля
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -31,39 +30,41 @@ async function registerUser(req, res) {
 
     return res.status(201).json({
       message: 'Регистрация успешна',
-      user: { 
-        id: newUser.id, 
-        username: newUser.username, 
-        email: newUser.email, 
-        role: newUser.role }
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role,
+      },
     });
-
   } catch (err) {
     console.error('registerUser error', err);
     return res.status(500).json({ error: 'Server error' });
   }
 }
 
-
 // Логин
 async function loginUser(req, res) {
   try {
-    const { username, password } = req.body; 
-    if (!username || !password) 
-    return res.status(400).json({ error: 'username and password are required' });
-
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: 'username and password are required' });
+    }
     // Попробуем найти пользователя по username
     let user = await userModel.getUserByName(username);
 
-    if (!user) 
+    if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' });
+    }
 
     const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) 
+
+    if (!valid) {
       return res.status(400).json({ error: 'Invalid credentials' });
+    }
 
     const payLoad = { id: user.id, username: user.username, role: user.role };
-    const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: '1d' });
 
     return res.json({ message: 'Вход успешен', token });
   } catch (err) {
@@ -72,13 +73,11 @@ async function loginUser(req, res) {
   }
 }
 
-
-  
-
 async function getProfile(req, res) {
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const user = await userModel.getUser(userId);
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -89,7 +88,7 @@ async function getProfile(req, res) {
       email: user.email,
       role: user.role,
       created_at: user.created_at,
-      updated_at: user.updated_at
+      updated_at: user.updated_at,
     };
 
     return res.json(profile);
@@ -98,9 +97,5 @@ async function getProfile(req, res) {
     return res.status(500).json({ error: 'Server error' });
   }
 }
- 
-
-
-
 
 module.exports = { registerUser, loginUser, getProfile };

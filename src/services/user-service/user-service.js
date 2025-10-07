@@ -1,38 +1,29 @@
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../../models/user-model');
 
-
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
 
-
-
 async function getAllUsers(req, res) {
   try {
-  const users = await userModel.getUsers();
-  res.json(users);
-} catch (error) {
-  res.status(500).json({ message: 'Error getting all users' })
+    const users = await userModel.getUser();
+    res.json(users); // todo  не отдавать хэш и даты
+  } catch (error) {
+    res.status(500).json({ message: 'Error getting all users' });
+  }
 }
-};
-
-
 
 async function getOneUser(req, res) {
-  const userId = req.params.user_id;
+  const userId = req.params.id;
   try {
-  console.log(userId);
-  const user = await userModel.getUser(userId);
-  res.json(user);
-  }
-  catch (error) {
+    console.log(userId);
+    const user = await userModel.getUser(userId);
+    res.json(user); // todo  не отдавать хэш и даты
+  } catch (error) {
     res.status(500).json({ message: 'Error getting user', error: error.message });
-  } 
-};
-
-
+  }
+}
 
 async function createUser(req, res) {
   try {
@@ -44,7 +35,7 @@ async function createUser(req, res) {
 
     // число “раундов” соли (или “сложность” хэширования).
     // Соль — это случайная добавка к паролю перед хэшированием.
-    // Она делает хэш уникальным. 
+    // Она делает хэш уникальным.
     const saltRounds = 10;
 
     // bcrypt генерирует соль (автоматически, исходя из saltRounds).
@@ -70,8 +61,8 @@ async function createUser(req, res) {
         id: newUser.id,
         name: newUser.name,
         mail: newUser.mail,
-        role: newUser.role
-      }
+        role: newUser.role,
+      },
     });
   } catch (error) {
     console.error('Error creating user:', error);
@@ -79,65 +70,51 @@ async function createUser(req, res) {
   }
 }
 
-
-
-async function deleteUser(req,res) {
-   const userId = req.params.id;
-   try {
-  const deletedUser = await userModel.deleteUserById(userId)
-   
-     if (deletedUser) {
-       res.json({ message: 'User deleted successfully', user: deletedUser });
-     } else {
-       res.status(404).json({ message: 'User not found' });
-     }
-   } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error: error.message });
-   }
-}
-
-
-
-async function updateUserName(req, res) {
+async function deleteUser(req, res) {
+  const userId = req.params.id;
   try {
-  const { userId, newName } = req.body;
-  const result = await userModel.updateUserNamebyId(newName, userId);
-  
-  if (!result) {
-  res.status(404).json({ message: 'User not found' });
-  }
-  
-  res.status(200).json({ message: 'User name updated', user: result });
-  } 
-  catch (error) {
-  console.error('Error updating user name:', err);
-  res.status(500).json({ message: 'Internal server error' });
-    };
-  }
+    const deletedUser = await userModel.deleteUser(userId);
 
-
-async function updateUserMail (req,res) {
-  try {
-  const { userId, newMail } = req.body;
-const result = await userModel.updateUserMailById(newMail, userId);
-
-if (result) {
-  res.status(200).json({ message: "User email updated", user: result });
+    if (deletedUser) {
+      res.json({ message: 'User deleted successfully', user: deletedUser });
     } else {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: 'User not found' });
     }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
-  catch (err) {
-    console.error("Error updating user name:", err);
-    res.status(500).json({ message: "Internal server error" });
-  };
 }
 
+async function updateUser(req, res) {
+  try {
+    const { userId, userName, email } = req.body;
+    const result = await userModel.updateUserNamebyId(userId, userName, email);
 
+    if (!result) {
+      res.status(404).json({ message: 'User not found' });
+    }
 
+    res.status(200).json({ message: 'User name updated', user: result });
+  } catch (error) {
+    console.error('Error updating user name:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
+async function updateUserMail(req, res) {
+  try {
+    const { userId, newMail } = req.body;
+    const result = await userModel.updateUserMailById(newMail, userId);
 
+    if (result) {
+      res.status(200).json({ message: 'User email updated', user: result });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    console.error('Error updating user name:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
-
-
-module.exports = { getAllUsers, getOneUser, createUser, deleteUser, updateUserName, updateUserMail };
+module.exports = { getAllUsers, getOneUser, createUser, deleteUser, updateUser, updateUserMail };

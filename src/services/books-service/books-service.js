@@ -1,6 +1,5 @@
 const bookModel = require('../../models/book-model');
 
-
 async function getAllBooks(req, res) {
   try {
     const books = await bookModel.getAllBooks();
@@ -10,7 +9,6 @@ async function getAllBooks(req, res) {
     res.status(500).json({ message: 'Error getting books', error: error.message });
   }
 }
-
 
 async function getAllBooksWithAuthors(req, res) {
   try {
@@ -22,9 +20,7 @@ async function getAllBooksWithAuthors(req, res) {
   }
 }
 
-
-
-async function getBook(req, res) {
+async function getBookById(req, res) {
   const bookId = req.params.id;
 
   try {
@@ -36,25 +32,21 @@ async function getBook(req, res) {
   }
 }
 
-
-
 async function getBookWithAuthor(req, res) {
   try {
     const bookId = req.params.id;
     const book = await bookModel.getBookWithAuthorById(bookId);
 
     if (!book) {
-      return res.status(404).json({ error: "Книга не найдена" });
+      return res.status(404).json({ error: 'Книга не найдена' });
     }
 
     res.json(book);
   } catch (err) {
-    console.error("Ошибка при получении книги:", err);
-    res.status(500).json({ error: "Ошибка при получении книги" });
+    console.error('Ошибка при получении книги:', err);
+    res.status(500).json({ error: 'Ошибка при получении книги' });
   }
 }
-
-
 
 async function createBook(req, res) {
   const book = {
@@ -72,11 +64,10 @@ async function createBook(req, res) {
   }
 }
 
-
-async function deleteBook (req, res) {
+async function deleteBook(req, res) {
   const bookId = req.params.id;
 
-  const deletedBook = await bookModel.deleteBook (bookId);
+  const deletedBook = await bookModel.deleteBook(bookId);
 
   if (deletedBook) {
     res.json({ message: 'Book deleted successfully', book: deletedBook });
@@ -84,8 +75,6 @@ async function deleteBook (req, res) {
     res.status(404).json({ message: 'Book not found' });
   }
 }
-
-
 
 async function updateBookStatus(req, res) {
   try {
@@ -106,14 +95,18 @@ async function updateBookStatus(req, res) {
       message: `Book ${bookId} status updated successfully`,
       book: updatedBook,
     });
-    
   } catch (error) {
     console.error('updateBookStatus error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 }
 
-
-
-
-module.exports = { getAllBooks, getAllBooksWithAuthors, getBook, getBookWithAuthor, createBook, deleteBook, updateBookStatus };
+module.exports = {
+  getAllBooks,
+  getAllBooksWithAuthors,
+  getBookById,
+  getBookWithAuthor,
+  createBook,
+  deleteBook,
+  updateBookStatus,
+};
