@@ -16,10 +16,14 @@ function authenticateToken(req, res, next) {
 
   const token = parts[1];
   jwt.verify(token, JWT_SECRET, (err, payload) => {
-    if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+    if (err) 
+      return res.status(403).json({ error: 'Invalid or expired token' });
     req.user = payload; // { id, username, role }
     next();
   });
 }
 
 module.exports = { authenticateToken };
+
+
+
