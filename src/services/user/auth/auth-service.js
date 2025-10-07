@@ -54,7 +54,6 @@ async function loginUser(req, res) {
 
     // Попробуем найти пользователя по username
     let user = await userModel.getUserByName(username);
-   
 
     if (!user) 
       return res.status(400).json({ error: 'Invalid credentials' });
