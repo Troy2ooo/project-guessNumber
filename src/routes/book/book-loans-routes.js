@@ -4,8 +4,9 @@ const router = express.Router();
 
 router.get('/', loansService.getAllLoans);
 router.get('/:id', loansService.getLoan);
-router.get('/', loansService.getAllLoans);
-router.get('/:id', loansService.getLoan);
+
+
+const { authenticateToken } = require('../../middleware/auth-middleware');
 
 
 router.post('/checkout/:id', authenticateToken, loansService.checkoutBook);
