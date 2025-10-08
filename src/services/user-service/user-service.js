@@ -5,25 +5,48 @@ const userModel = require('../../models/user-model');
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
 
+
 async function getAllUsers(req, res) {
   try {
-    const users = await userModel.getUser();
-    res.json(users); // todo  не отдавать хэш и даты
+    const users = await userModel.getAllUsers();
+    // Метод .map():
+    // проходит по каждому элементу массива;
+    // применяет к нему функцию, которую ты передаёшь;
+    // возвращает новый массив с результатами этой функции.
+    const usersData = users.map(user => ({
+      id: user.id,
+      name: user.username,
+      mail: user.email,
+      role: user.role
+    }));
+
+    res.json({
+      message: 'Here we go, all users!',
+      usersData
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error getting all users' });
   }
 }
+
 
 async function getOneUser(req, res) {
   const userId = req.params.id;
   try {
     console.log(userId);
     const user = await userModel.getUser(userId);
-    res.json(user); // todo  не отдавать хэш и даты
+    res.json({ message: 'Here we go user',
+      userData: {
+        id: user.id,
+      name: user.username,
+      mail: user.email,
+      role: user.role }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error getting user', error: error.message });
   }
-}
+};
+
 
 async function createUser(req, res) {
   try {

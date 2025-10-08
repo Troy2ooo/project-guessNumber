@@ -1,5 +1,5 @@
 const loansModel = require('../../models/book-loans-model');
-const bookModel = require('../../models/book-model');
+const bookModel = require('../../models/book-model')
 
 async function getAllLoans(req, res) {
   try {
@@ -11,6 +11,7 @@ async function getAllLoans(req, res) {
   }
 }
 
+
 async function getLoan(req, res) {
   const loanId = req.params.id;
 
@@ -21,7 +22,10 @@ async function getLoan(req, res) {
   } catch (error) {
     res.status(500).json({ message: 'Error creating loan', error: error.message });
   }
-}
+};
+
+
+
 
 // 📘 Взять книгу
 async function checkoutBook(req, res) {
@@ -31,13 +35,14 @@ async function checkoutBook(req, res) {
   try {
     // Проверим, доступна ли книга
     const book = await bookModel.getBook(bookId);
-    if (!book) return res.status(404).json({ error: 'Book not found' });
+    if (!book) 
+      return res.status(404).json({ error: 'Book not found' });
 
     if (!book.available) {
       return res.status(400).json({ error: 'Book is not available' });
     }
 
-    await loansModel.checkoutBook(bookId, userId);
+    await loansModel.createLoan(bookId, userId);
     await bookModel.updateBookStatus(bookId, false);
 
     res.status(201).json({
@@ -50,6 +55,7 @@ async function checkoutBook(req, res) {
   }
 }
 
+
 // 📗 Вернуть книгу
 async function returnBook(req, res) {
   const bookId = req.params.id;
@@ -57,7 +63,8 @@ async function returnBook(req, res) {
 
   try {
     const book = await bookModel.getBook(bookId);
-    if (!book) return res.status(404).json({ error: 'Book not found' });
+    if (!book) 
+      return res.status(404).json({ error: 'Book not found' });
 
     // Проверим, есть ли незакрытый loan
     const loan = await loansModel.returnBook(bookId, userId);
@@ -77,5 +84,8 @@ async function returnBook(req, res) {
     res.status(500).json({ error: 'Server error' });
   }
 }
+
+
+
 
 module.exports = { getAllLoans, getLoan, checkoutBook, returnBook };
