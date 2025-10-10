@@ -1,4 +1,28 @@
+/**
+ * @module AuthorsService
+ * Сервисный модуль для работы с авторами.
+ * 
+ * Содержит функции для:
+ * - получения всех авторов,
+ * - получения одного автора по ID,
+ * - создания нового автора,
+ * - удаления автора по ID.
+ */
+
+
 const authorsModel = require('../../models/authors-model');
+
+
+/**
+ * Получает всех авторов и отправляет их в ответе.
+ *
+ * @async
+ * @function getAllAuthors
+ * @param {Object} req - HTTP-запрос.
+ * @param {Object} res - HTTP-ответ.
+ * @returns {Promise<void>}
+ * @throws {Error} Если произошла ошибка при получении авторов.
+ */
 
 
 async function getAllAuthors(req, res) {
@@ -12,6 +36,20 @@ async function getAllAuthors(req, res) {
 }
 
 
+/**
+ * Получает одного автора по ID и отправляет его в ответе.
+ *
+ * @async
+ * @function getAuthor
+ * @param {Object} req - HTTP-запрос.
+ * @param {Object} req.params - Параметры запроса.
+ * @param {number} req.params.id - ID автора.
+ * @param {Object} res - HTTP-ответ.
+ * @returns {Promise<void>}
+ * @throws {Error} Если произошла ошибка при получении автора.
+ */
+
+
 async function getAuthor(req, res) {
   const authorId = req.params.id;
 
@@ -23,6 +61,22 @@ async function getAuthor(req, res) {
     res.status(500).json({ message: 'Error getting author', error: error.message });
   }
 };
+
+
+
+/**
+ * Создает нового автора и отправляет объект созданного автора в ответе.
+ *
+ * @async
+ * @function createAuthor
+ * @param {Object} req - HTTP-запрос.
+ * @param {Object} req.body - Тело запроса.
+ * @param {string} req.body.name - Имя автора.
+ * @param {string} req.body.bio - Биография автора.
+ * @param {Object} res - HTTP-ответ.
+ * @returns {Promise<void>}
+ * @throws {Error} Если произошла ошибка при создании автора.
+ */
 
 
 async function createAuthor(req, res) {
@@ -39,6 +93,20 @@ async function createAuthor(req, res) {
     res.status(500).json({ message: 'Error creating author', error: error.message });
   }
 }
+
+
+/**
+ * Удаляет автора по ID и отправляет объект удаленного автора в ответе.
+ *
+ * @async
+ * @function deleteAuthor
+ * @param {Object} req - HTTP-запрос.
+ * @param {Object} req.params - Параметры запроса.
+ * @param {number} req.params.id - ID автора.
+ * @param {Object} res - HTTP-ответ.
+ * @returns {Promise<void>}
+ * @throws {Error} Если произошла ошибка при удалении автора.
+ */
 
 
 async function deleteAuthor (req, res) {

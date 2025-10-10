@@ -1,4 +1,43 @@
+/**
+ * @module BookModel
+ * Модуль для работы с таблицей `book` в базе данных.
+ * 
+ * Содержит функции для:
+ * - получение всех книг,
+ * - получение одной книги по ID,
+ * - получение всех книг с авторами,
+ * - получение одной книги с автором по ID,
+ * - создание книг,
+ * - удаление книги по ID,
+ * - обновление статуса доступности книги по ID
+ */
+
+
 const pool = require('../../db');
+
+
+/**
+ * пользовательский тип, описывающий свойства объекта, который содержит данные о книгах.
+ * 
+ * @typedef {Object} Book
+ * @property {number} id - Уникальный идентификатор книги.
+ * @property {string} title - наименование книги.
+ * @property {string} description - описание книги.
+ * @property {boolean} available - Статус доступности книги.
+ * @property {Date} created_at - дата и время создания книги.
+ * @property {Date} updated_at - дата и время последнего обновления.
+ */
+
+
+/**
+ * Получает все книги из базы данных.
+ * 
+ * @async
+ * @function getAllBooks
+ * @returns {Promise<Book[]>} Массив всех книг.
+ * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
+ */
+
 
 async function getAllBooks() {
   const query = 'SELECT * FROM books';
@@ -6,6 +45,17 @@ async function getAllBooks() {
 
   return result.rows;
 }
+
+
+/**
+ * Получает все книги с их авторами из базы данных.
+ *
+ * @async
+ * @function getAllBooksWithAuthors
+ * @returns {Promise<Book[]>} Массив всех книг с их авторами.
+ * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
+ */
+
 
 async function getAllBooksWithAuthors() {
   const query = `
@@ -30,6 +80,18 @@ async function getAllBooksWithAuthors() {
   return result.rows;
 }
 
+
+/**
+ * Получает одну запись о займе книги по её ID.
+ *
+ * @async
+ * @function getBook
+ * @param {number} bookId - Уникальный идентификатор книги.
+ * @returns {Promise<Book[]>} Объект с информацией о названии книги.
+ * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
+ */
+
+
 async function getBook(bookId) {
   const query = 'SELECT * FROM books WHERE id = $1;';
   const value = [bookId];
@@ -39,6 +101,18 @@ async function getBook(bookId) {
 
   return result.rows[0];
 }
+
+
+/**
+ * Получает одну книгу с ее автором по ID книги.
+ *
+ * @async
+ * @function getBookWithAuthorById
+ * @param {number} bookId - Уникальный идентификатор книги.
+ * @returns  {Promise<Book|null>} - Возвращает объект книги или null, если не найден.
+ * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
+ */
+
 
 async function getBookWithAuthorById(bookId) {
   const query = `
@@ -63,6 +137,20 @@ async function getBookWithAuthorById(bookId) {
   return result.rows[0];
 }
 
+
+/**
+ * Создает одну книгу.
+ *
+ * @async
+ * @function createBook
+ * @param {text} bookTitle - название книги.
+ * @param {text} bookDescription - описание книги
+ * @param {boolean} bookAvailable - наличие книги по умоляания true.
+ * @returns {Promise<Book|null>} - Возвращает объект книги или null, если не найден.
+ * @throws {Error} Если произошла ошибка при создании книги.
+ */
+
+
 async function createBook(bookTitle, bookDescription, bookAvailable = true) {
   console.log({ bookTitle, bookDescription, bookAvailable });
   const query = 'INSERT INTO books (title, description, available) values ($1, $2, $3) RETURNING * ;';
@@ -74,14 +162,38 @@ async function createBook(bookTitle, bookDescription, bookAvailable = true) {
   return result.rows[0];
 }
 
+
+/**
+ * Удаляет одну книгу по ID.
+ *
+ * @async
+ * @function deleteBook
+ * @param {number} bookId - ID книги.
+ * @returns {Promise<Book|null>} Объект удалённой книги или null, если не найдена.
+ * @throws {Error} Если произошла ошибка при создании книги.
+ */
+
+
 async function deleteBook(bookId) {
   const query = 'DELETE FROM books WHERE id = $1  RETURNING *';
   const values = [bookId];
   const result = await pool.query(query, values);
 
-  console.log({ result });
-  return result;
+  return result.rows[0];
 }
+
+
+/**
+ * Обнавляет статус наличия книги по ID.
+ *
+ * @async
+ * @function updateBookStatus
+ * @param {number} book_id - ID книги.
+ * @param {boolean} isAvailable - статус наличия книги.
+ * @returns {Promise<Book|null>} Обновлённая книга или null, если книга не найдена.
+ * @throws {Error} Если произошла ошибка при создании книги.
+ */
+
 
 async function updateBookStatus(book_id, isAvailable) {
   const query = `
@@ -96,7 +208,7 @@ async function updateBookStatus(book_id, isAvailable) {
   try {
     const result = await pool.query(query, values);
     if (result.rows.length === 0) {
-      console.warn(`Book with ID ${book_id} nit found`);
+      console.warn(`Book with ID ${book_id} not found`);
       return null;
     }
     return result.rows[0];

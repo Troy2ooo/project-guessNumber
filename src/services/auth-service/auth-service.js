@@ -1,9 +1,33 @@
+/**
+ * @module AuthService
+ * Сервисный модуль для аутентификации пользователей.
+ * 
+ * Содержит функции для:
+ * - регистрации пользователя,
+ * - логина пользователя с выдачей JWT,
+ * - получения профиля текущего пользователя.
+ */
+
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../../models/user-model');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
+
+
+/**
+ * Регистрирует нового пользователя.
+ *
+ * @async
+ * @function registerUser
+ * @param {import('express').Request} req - Объект запроса, содержит body: { username, email, password, role }.
+ * @param {import('express').Response} res - Объект ответа.
+ * @returns {Promise<void>} Отправляет JSON с данными нового пользователя.
+ * @throws {Error} Если произошла ошибка при регистрации или пользователь уже существует.
+ */
+
 
 // Регистрация
 async function registerUser(req, res) {
@@ -43,6 +67,19 @@ async function registerUser(req, res) {
   }
 }
 
+
+/**
+ * Авторизует пользователя и выдает JWT-токен.
+ *
+ * @async
+ * @function loginUser
+ * @param {import('express').Request} req - Объект запроса, содержит body: { username, password }.
+ * @param {import('express').Response} res - Объект ответа.
+ * @returns {Promise<void>} Отправляет JSON с JWT-токеном.
+ * @throws {Error} Если произошла ошибка при логине или введены неверные данные.
+ */
+
+
 // Логин
 async function loginUser(req, res) {
   try {
@@ -72,6 +109,19 @@ async function loginUser(req, res) {
     return res.status(500).json({ error: 'Server error' });
   }
 }
+
+
+/**
+ * Возвращает профиль текущего пользователя.
+ *
+ * @async
+ * @function getProfile
+ * @param {import('express').Request} req - Объект запроса, содержит user.id (из middleware авторизации).
+ * @param {import('express').Response} res - Объект ответа.
+ * @returns {Promise<void>} Отправляет JSON с данными профиля пользователя.
+ * @throws {Error} Если пользователь не найден или произошла ошибка сервера.
+ */
+
 
 async function getProfile(req, res) {
   try {
