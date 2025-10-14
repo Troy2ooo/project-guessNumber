@@ -4,6 +4,11 @@ const db = require('../../../db');
 
 // pool - это объект, который позволяет приложению управлять несколькими соединениями с базой данных
 
+/**
+ *
+ * @param req  
+ * @param res
+ */
 function getTime(req, res) {
   db.query('SELECT NOW()', (err, result) => {
     if (err) {

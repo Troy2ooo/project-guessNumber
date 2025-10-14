@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', loansService.getAllLoans);
 router.get('/:id', loansService.getLoan);
-router.post('/:id', authenticateToken, loansService.checkoutBook);
+router.post('/:id', authenticateToken, loansService.checkoutBook); //доработать
 router.patch('/:id', authenticateToken, loansService.returnBook);
 
 module.exports = router;
