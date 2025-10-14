@@ -11,8 +11,6 @@
  * - удаления книги по ID,
  * - обновления статуса доступности книги.
  */
-
-
 const bookModel = require('../../models/book-model');
 
 
@@ -26,8 +24,6 @@ const bookModel = require('../../models/book-model');
  * @returns {Promise<void>} Отправляет JSON с массивом всех книг.
  * @throws {Error} Если произошла ошибка при получении книг.
  */
-
-
 async function getAllBooks(req, res) {
   try {
     const books = await bookModel.getAllBooks();
@@ -44,17 +40,14 @@ async function getAllBooks(req, res) {
  *
  * @async
  * @function getAllBooksWithAuthors
- * @param {import('express').Request} req
- * @param {import('express').Response} res
+ * @param {import('express').Request} req - Объект запроса Express.
+ * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с массивом всех книг и их авторов.
  * @throws {Error} Если произошла ошибка при получении книг.
  */
-
-
 async function getAllBooksWithAuthors(req, res) {
   try {
     const books = await bookModel.getAllBooksWithAuthors();
-
     res.json(books);
   } catch (error) {
     res.status(500).json({ message: 'Error getting books', error: error.message });
@@ -69,12 +62,10 @@ async function getAllBooksWithAuthors(req, res) {
  * @async
  * @function getBookById
  * @param {import('express').Request} req - req.params.id содержит ID книги.
- * @param {import('express').Response} res
+ * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом книги.
  * @throws {Error} Если произошла ошибка при получении книги.
  */
-
-
 async function getBookById(req, res) {
   const bookId = req.params.id;
 
@@ -94,12 +85,10 @@ async function getBookById(req, res) {
  * @async
  * @function getBookWithAuthor
  * @param {import('express').Request} req - req.params.id содержит ID книги.
- * @param {import('express').Response} res
+ * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом книги и автором.
  * @throws {Error} Если книга не найдена или произошла ошибка сервера.
  */
-
-
 async function getBookWithAuthor(req, res) {
   try {
     const bookId = req.params.id;
@@ -123,12 +112,10 @@ async function getBookWithAuthor(req, res) {
  * @async
  * @function createBook
  * @param {import('express').Request} req - req.body содержит { title, description, available }.
- * @param {import('express').Response} res
+ * @param {import('express').Response} res - - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом созданной книги.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-
-
 async function createBook(req, res) {
   const book = {
     title: req.body.title,
@@ -152,11 +139,9 @@ async function createBook(req, res) {
  * @async
  * @function deleteBook
  * @param {import('express').Request} req - req.params.id содержит ID книги.
- * @param {import('express').Response} res
+ * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом удаленной книги или сообщение об ошибке.
  */
-
-
 async function deleteBook(req, res) {
   const bookId = req.params.id;
 
@@ -177,12 +162,10 @@ async function deleteBook(req, res) {
  * @async
  * @function updateBookStatus
  * @param {import('express').Request} req - req.params.id содержит ID книги, req.body.available содержит true/false.
- * @param {import('express').Response} res
+ * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с обновленным объектом книги.
  * @throws {Error} Если произошла ошибка при обновлении книги.
  */
-
-
 async function updateBookStatus(req, res) {
   try {
     const bookId = req.params.id;

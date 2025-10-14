@@ -39,15 +39,7 @@ async function getAllUsers() {
   const query = 'SELECT * FROM users';
   const result = await pool.query(query);
   return result.rows;
-}
-
-
-async function getAllUsers() {
-  const query = 'SELECT * FROM users';
-  const result = await pool.query(query);
-
-  return result.rows;
-}
+};
 
 
 /**
@@ -59,8 +51,6 @@ async function getAllUsers() {
  * @returns {Promise<User|null>} Объект пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function getUser(userId) {
   const query = 'SELECT * FROM users WHERE id = $1;';
   const value = [userId];
@@ -68,6 +58,26 @@ async function getUser(userId) {
 
   return result.rows[0];
 }
+
+
+async function getUserByName(username) {
+  if (!username) {
+    throw new Error('Username is required');
+  }
+
+  const query = 'SELECT * FROM users WHERE username = $1;';
+  const values = [username];
+
+  try {
+    const result = await pool.query(query, values);
+    
+    return result.rows[0] || null; // null, если пользователь не найден
+  } catch (err) {
+    console.error('getUserByName error:', err);
+    throw new Error('Database query error');
+  }
+}
+
 
 
 /**
@@ -82,8 +92,6 @@ async function getUser(userId) {
  * @returns {Promise<User>} Объект созданного пользователя.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function createUser(userName, userEmail, password_hash, role = 'user') {
   const query = 'INSERT INTO users (username, email, password_hash, role ) values ($1, $2, $3, $4) RETURNING * ';
   const values = [userName, userEmail, password_hash, role];
@@ -106,8 +114,6 @@ async function createUser(userName, userEmail, password_hash, role = 'user') {
  * @returns {Promise<User|null>} Объект удаленного пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function deleteUser(userId) {
   // RETURNING * - какие данные должны быть возвращены после выполнения операции удаления.
   // благодаря returning *, в логах result будет содержаться объект с удаленной записью
@@ -129,13 +135,12 @@ async function deleteUser(userId) {
  * @returns {Promise<User|null>} Объект обновленного пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function updateUser(userId, fieldsToUpdate) {
   // Проверяем, что есть что обновлять
   const keys = Object.keys(fieldsToUpdate);
-  if (keys.length === 0) 
-    return null;
+  if (keys.length === 0) {
+    return null; 
+  };
   // Генерируем SET часть запроса: "name = $1, email = $2"
   const setQuery = keys.map((key, idx) => `${key} = $${idx + 1}`).join(', ');
   // Формируем массив значений в том же порядке
@@ -144,9 +149,10 @@ async function updateUser(userId, fieldsToUpdate) {
   const query = `UPDATE users SET ${setQuery}, updated_at = NOW() WHERE id = $${values.length} RETURNING *`;
   try {
     const result = await pool.query(query, values);
-    if (result.rows.length === 0) 
+    if (result.rows.length === 0) {
       return null;
-
+    };
+    
     return result.rows[0];
   } catch (err) {
     console.error('Error updating user:', err);
@@ -164,8 +170,6 @@ async function updateUser(userId, fieldsToUpdate) {
  * @returns {Promise<User|null>} Объект обновленного пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function updateUserMail(newMail, userId) {
   const query = 'UPDATE users SET mail = $1 WHERE id = $2 RETURNING *';
   const values = [newMail, userId];
@@ -184,4 +188,4 @@ async function updateUserMail(newMail, userId) {
 
 
 
-module.exports = { updateUserMail, updateUser, deleteUser, getAllUsers, createUser, getUser };
+module.exports = { updateUserMail, updateUser, deleteUser, getAllUsers, createUser, getUser, getUserByName };

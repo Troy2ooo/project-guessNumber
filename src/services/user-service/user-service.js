@@ -10,8 +10,6 @@
  * - обновление информации пользователя,
  * - обновление электронной почты пользователя.
  */
-
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../../models/user-model');
@@ -30,8 +28,6 @@ const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
  * @returns {Promise<void>} Отправляет JSON с массивом пользователей.
  * @throws {Error} Если произошла ошибка при выполнении запроса к базе данных.
  */
-
-
 async function getAllUsers(req, res) {
   try {
     const users = await userModel.getAllUsers();
@@ -51,9 +47,9 @@ async function getAllUsers(req, res) {
       usersData
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error getting all users' });
+    res.status(500).json({ message: 'Error getting all users', error: error.message });
   }
-}
+};
 
 
 /**
@@ -66,8 +62,6 @@ async function getAllUsers(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными пользователя.
  * @throws {Error} Если произошла ошибка при выполнении запроса к базе данных.
  */
-
-
 async function getOneUser(req, res) {
   const userId = req.params.id;
   try {
@@ -96,8 +90,6 @@ async function getOneUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными созданного пользователя.
  * @throws {Error} Если произошла ошибка при создании пользователя или нарушении уникальности.
  */
-
-
 async function createUser(req, res) {
   try {
     const { name, mail, password, role } = req.body;
@@ -117,7 +109,6 @@ async function createUser(req, res) {
 
     // Определяем роль (по умолчанию "user")
     let userRole = 'user';
-
     if (role === 'admin') {
       if (req.user && req.user.role === 'admin') {
         userRole = 'admin'; // админ может создать другого админа
@@ -125,9 +116,7 @@ async function createUser(req, res) {
         return res.status(403).json({ error: 'Only admins can assign the admin role' });
       }
     }
-
     const newUser = await userModel.createUser(name, mail, password_hash, userRole);
-
     res.status(201).json({
       message: 'User created successfully',
       user: {
@@ -154,13 +143,10 @@ async function createUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными удаленного пользователя.
  * @throws {Error} Если произошла ошибка при удалении пользователя.
  */
-
-
 async function deleteUser(req, res) {
   const userId = req.params.id;
   try {
     const deletedUser = await userModel.deleteUser(userId);
-
     if (deletedUser) {
       res.json({ message: 'User deleted successfully', user: deletedUser });
     } else {
@@ -182,8 +168,6 @@ async function deleteUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с обновленными данными пользователя.
  * @throws {Error} Если произошла ошибка при обновлении.
  */
-
-
 //донастроить http
 async function updateUser(req, res) {
   try {
@@ -193,8 +177,10 @@ async function updateUser(req, res) {
     }
     // Создаем объект только с полями, которые пришли
     const fieldsToUpdate = {};
-    if (userName) fieldsToUpdate.name = userName;
-    if (email) fieldsToUpdate.email = email;
+    if (userName) { fieldsToUpdate.name = userName
+    };
+    if (email) { fieldsToUpdate.email = email
+    };
     const result = await userModel.updateUser(userId, fieldsToUpdate);
 
     if (!result) {
@@ -218,8 +204,6 @@ async function updateUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с обновленным email пользователя.
  * @throws {Error} Если произошла ошибка при обновлении email.
  */
-
-
 async function updateUserMail(req, res) {
   try {
     const { userId, newMail } = req.body;

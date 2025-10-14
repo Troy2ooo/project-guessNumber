@@ -8,8 +8,6 @@
  * - создания нового автора,
  * - удаления автора по ID.
  */
-
-
 const authorsModel = require('../../models/authors-model');
 
 
@@ -23,8 +21,6 @@ const authorsModel = require('../../models/authors-model');
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при получении авторов.
  */
-
-
 async function getAllAuthors(req, res) {
   try {
     const authors = await authorsModel.getAllAuthors();
@@ -48,8 +44,6 @@ async function getAllAuthors(req, res) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при получении автора.
  */
-
-
 async function getAuthor(req, res) {
   const authorId = req.params.id;
 
@@ -77,8 +71,6 @@ async function getAuthor(req, res) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при создании автора.
  */
-
-
 async function createAuthor(req, res) {
   const author = {
     name: req.body.name,
@@ -107,14 +99,12 @@ async function createAuthor(req, res) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при удалении автора.
  */
-
-
 async function deleteAuthor (req, res) {
   const authorId = req.params.id;
 
   const deletedAuthor = await authorsModel.deleteAuthor (authorId);
 
-  if (deleteAuthor) {
+  if (deletedAuthor) {
     res.json({ message: 'Author deleted successfully', author: deleteAuthor });
   } else {
     res.status(404).json({ message: 'Author not found' });

@@ -1,11 +1,12 @@
 const express = require('express');
-const usersService = require('../../services/auth-service/auth-service');
+const authService = require('../../services/auth-service/auth-service');
 const { authenticateToken } = require('../../middleware/auth-middleware');
 
 const router = express.Router();
 
-router.post('/register', usersService.registerUser);
-router.post('/login', usersService.loginUser);
-router.get('/profile', authenticateToken, usersService.getProfile);
+router.post('/register', authService.registerUser);
+router.post('/login', authService.loginUser);
+router.get('/profile', authenticateToken, authService.getProfile);
+router.post('/refresh', authService.refreshAccessToken)
 
-module.exports = router;
+module.exports = router; 

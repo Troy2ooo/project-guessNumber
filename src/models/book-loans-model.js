@@ -34,7 +34,6 @@ const pool = require('../../db');
  * @returns {Promise<BookLoan[]>} Массив всех записей о займах.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
 async function getAllLoans() {
   const query = 'SELECT * FROM book_loans';
   const result = await pool.query(query);
@@ -52,8 +51,6 @@ async function getAllLoans() {
  * @returns {Promise<BookLoan>} Объект с информацией о займе.
  * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
  */
-
-
 async function getLoan(loanId) {
   const query = 'SELECT * FROM book_loans WHERE id = $1;';
   const value = [loanId];
@@ -73,8 +70,6 @@ async function getLoan(loanId) {
  * @returns {Promise<BookLoan>} Объект с данными о созданной записи займа.
  * @throws {Error} Если произошла ошибка при добавлении записи.
  */
-
-
 async function checkoutBook(bookId, userId) {
   const query = `
     INSERT INTO book_loans (book_id, user_id, taken_at)
@@ -98,8 +93,6 @@ async function checkoutBook(bookId, userId) {
  * @returns {Promise<BookLoan>} Обновлённая запись займа с датой возврата.
  * @throws {Error} Если запись не найдена или книга уже была возвращена.
  */
-
-
 async function returnBook(bookId, userId) {
   const query = `
     UPDATE book_loans

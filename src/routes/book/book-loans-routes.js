@@ -1,5 +1,5 @@
 const express = require('express');
-const loansService = require('../../services/books/books-loans-service');
+const loansService = require('../../services/books-service/books-loans-service');
 const router = express.Router();
 
 router.get('/', loansService.getAllLoans);

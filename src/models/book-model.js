@@ -37,8 +37,6 @@ const pool = require('../../db');
  * @returns {Promise<Book[]>} Массив всех книг.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function getAllBooks() {
   const query = 'SELECT * FROM books';
   const result = await pool.query(query);
@@ -55,8 +53,6 @@ async function getAllBooks() {
  * @returns {Promise<Book[]>} Массив всех книг с их авторами.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function getAllBooksWithAuthors() {
   const query = `
       SELECT 
@@ -90,8 +86,6 @@ async function getAllBooksWithAuthors() {
  * @returns {Promise<Book[]>} Объект с информацией о названии книги.
  * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
  */
-
-
 async function getBook(bookId) {
   const query = 'SELECT * FROM books WHERE id = $1;';
   const value = [bookId];
@@ -112,8 +106,6 @@ async function getBook(bookId) {
  * @returns  {Promise<Book|null>} - Возвращает объект книги или null, если не найден.
  * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
  */
-
-
 async function getBookWithAuthorById(bookId) {
   const query = `
     SELECT 
@@ -149,8 +141,6 @@ async function getBookWithAuthorById(bookId) {
  * @returns {Promise<Book|null>} - Возвращает объект книги или null, если не найден.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-
-
 async function createBook(bookTitle, bookDescription, bookAvailable = true) {
   console.log({ bookTitle, bookDescription, bookAvailable });
   const query = 'INSERT INTO books (title, description, available) values ($1, $2, $3) RETURNING * ;';
@@ -172,8 +162,6 @@ async function createBook(bookTitle, bookDescription, bookAvailable = true) {
  * @returns {Promise<Book|null>} Объект удалённой книги или null, если не найдена.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-
-
 async function deleteBook(bookId) {
   const query = 'DELETE FROM books WHERE id = $1  RETURNING *';
   const values = [bookId];
@@ -193,8 +181,6 @@ async function deleteBook(bookId) {
  * @returns {Promise<Book|null>} Обновлённая книга или null, если книга не найдена.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-
-
 async function updateBookStatus(book_id, isAvailable) {
   const query = `
   UPDATE books
@@ -204,13 +190,13 @@ async function updateBookStatus(book_id, isAvailable) {
     RETURNING *;
     `;
   const values = [book_id, isAvailable];
-
   try {
     const result = await pool.query(query, values);
     if (result.rows.length === 0) {
       console.warn(`Book with ID ${book_id} not found`);
       return null;
     }
+    
     return result.rows[0];
   } catch (err) {
     console.error('Error updating book status:', err);

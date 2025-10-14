@@ -8,7 +8,6 @@
  * - создания нового автора,
  * - удаления автора по ID.
  */
-
 const pool = require('../../db');
 
 
@@ -20,8 +19,6 @@ const pool = require('../../db');
  * @returns {Promise<Object[]>} Массив объектов авторов.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function getAllAuthors() {
   const query = 'SELECT * FROM authors';
   const result = await pool.query(query);
@@ -39,8 +36,6 @@ async function getAllAuthors() {
  * @returns {Promise<Object>} Объект автора.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-
-
 async function getOneAuthor(authorId) {
   const query = 'SELECT * FROM authors WHERE id = $1;';
   const value = [authorId];
@@ -60,8 +55,6 @@ async function getOneAuthor(authorId) {
  * @returns {Promise<Object>} Объект созданного автора.
  * @throws {Error} Если произошла ошибка при создании автора.
  */
-
-
 async function createAuthor(authorName, authorBio) {
   const query = 'INSERT INTO authors (name, bio) values ($1, $2) RETURNING * ;';
   const values = [authorName, authorBio];
@@ -80,12 +73,12 @@ async function createAuthor(authorName, authorBio) {
  * @returns {Promise<Object>} Объект удаленного автора.
  * @throws {Error} Если произошла ошибка при удалении автора.
  */
-
-
 async function deleteAuthor(authorId) {
   const query = 'DELETE FROM authors WHERE id = $1  RETURNING *';
   const values = [authorId];
   const result = await pool.query(query, values);
+
+  return result.rows[0];
 }
 
 module.exports = { getAllAuthors, getOneAuthor, createAuthor, deleteAuthor };

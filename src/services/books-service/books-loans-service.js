@@ -8,7 +8,6 @@
  * - выдачи книги пользователю (checkout),
  * - возврата книги пользователем.
  */
-
 const loansModel = require('../../models/book-loans-model');
 const bookModel = require('../../models/book-model')
 
@@ -23,8 +22,6 @@ const bookModel = require('../../models/book-model')
  * @returns {Promise<void>} Отправляет JSON с массивом всех займов.
  * @throws {Error} Если произошла ошибка при получении займов.
  */
-
-
 async function getAllLoans(req, res) {
   try {
     const loans = await loansModel.getAllLoans();
@@ -46,8 +43,6 @@ async function getAllLoans(req, res) {
  * @returns {Promise<void>} Отправляет JSON с объектом займа.
  * @throws {Error} Если произошла ошибка при получении займа.
  */
-
-
 async function getLoan(req, res) {
   const loanId = req.params.id;
 
@@ -66,40 +61,35 @@ async function getLoan(req, res) {
  *
  * @async
  * @function checkoutBook
- * @param {import('express').Request} req - req.params.id содержит ID книги, req.body.user_id содержит ID пользователя.
- * @param {import('express').Response} res
+ * @param {import('express').Request} req - req.params.id содержит ID книги.
+ * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом займа.
  * @throws {Error} Если книга недоступна или произошла ошибка сервера.
  */
 
-
-// Взять книгу
+// доработать
 async function checkoutBook(req, res) {
   const bookId = req.params.id;
-  const userId = req.body.user_id;
-
+  
   try {
     // Проверим, доступна ли книга
     const book = await bookModel.getBook(bookId);
-    if (!book) 
+    if (!book) {
       return res.status(404).json({ error: 'Book not found' });
-
+    };
     if (!book.available) {
+      
       return res.status(400).json({ error: 'Book is not available' });
-    }
-
-    await loansModel.createLoan(bookId, userId);
+    };
+    // Обновляем статус книги
     await bookModel.updateBookStatus(bookId, false);
-
     res.status(201).json({
-      message: 'Book checked out successfully',
-      loan,
-    });
+      message: 'Book checked out successfully'});
   } catch (error) {
     console.error('checkoutBook error:', error);
     res.status(500).json({ error: 'Server error' });
   }
-}
+};
 
 
 /**
@@ -108,22 +98,19 @@ async function checkoutBook(req, res) {
  * @async
  * @function returnBook
  * @param {import('express').Request} req - req.params.id содержит ID книги, req.body.user_id содержит ID пользователя.
- * @param {import('express').Response} res
+ * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом возврата займа.
  * @throws {Error} Если не найден активный заем или произошла ошибка сервера.
  */
-
-
-// Вернуть книгу
 async function returnBook(req, res) {
   const bookId = req.params.id;
   const userId = req.body.user_id;
 
   try {
     const book = await bookModel.getBook(bookId);
-    if (!book) 
-      return res.status(404).json({ error: 'Book not found' });
-
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' })
+    };
     // Проверим, есть ли незакрытый loan
     const loan = await loansModel.returnBook(bookId, userId);
     if (!loan) {
