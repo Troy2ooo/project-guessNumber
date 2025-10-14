@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 
 /**
- * @fileoverview Middleware для аутентификации пользователей по JWT.
+ * @file Middleware для аутентификации пользователей по JWT.
  * Проверяет наличие и корректность токена в заголовке Authorization.
  * Если токен валиден — добавляет данные пользователя в req.user и передаёт управление дальше.
  * Если токен отсутствует или недействителен — возвращает ошибку 401 или 403.

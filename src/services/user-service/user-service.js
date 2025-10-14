@@ -11,12 +11,7 @@
  * - обновление электронной почты пользователя.
  */
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const userModel = require('../../models/user-model');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
-const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
-
 
 /**
  * Получает всех пользователей.
@@ -171,21 +166,33 @@ async function deleteUser(req, res) {
 //донастроить http
 async function updateUser(req, res) {
   try {
-    const { userId, userName, email } = req.body;
+    const { userName, email } = req.body;
+    const userId = req.params.id
+
+    console.log(req.params);
+    console.log({ userId, userName, email });
+
     if (!userId) {
       return res.status(400).json({ message: 'userId is required' });
     }
+
     // Создаем объект только с полями, которые пришли
     const fieldsToUpdate = {};
-    if (userName) { fieldsToUpdate.name = userName
+
+    if (userName) {
+      fieldsToUpdate.username = userName
     };
-    if (email) { fieldsToUpdate.email = email
+
+    if (email) {
+      fieldsToUpdate.email = email
     };
+
     const result = await userModel.updateUser(userId, fieldsToUpdate);
 
     if (!result) {
       return res.status(404).json({ message: 'User not found or nothing to update' });
     }
+
     res.status(200).json({ message: 'User updated successfully', user: result });
   } catch (error) {
     console.error('Error updating user:', error);

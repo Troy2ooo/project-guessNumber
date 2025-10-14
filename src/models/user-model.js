@@ -60,6 +60,10 @@ async function getUser(userId) {
 }
 
 
+/**
+ *
+ * @param username
+ */
 async function getUserByName(username) {
   if (!username) {
     throw new Error('Username is required');
@@ -104,7 +108,6 @@ async function createUser(userName, userEmail, password_hash, role = 'user') {
   }
 }
 
-
 /**
  * Удаляет пользователя по ID.
  * 
@@ -138,17 +141,24 @@ async function deleteUser(userId) {
 async function updateUser(userId, fieldsToUpdate) {
   // Проверяем, что есть что обновлять
   const keys = Object.keys(fieldsToUpdate);
+
   if (keys.length === 0) {
-    return null; 
+    return null;
   };
+
   // Генерируем SET часть запроса: "name = $1, email = $2"
   const setQuery = keys.map((key, idx) => `${key} = $${idx + 1}`).join(', ');
+
   // Формируем массив значений в том же порядке
   const values = keys.map(key => fieldsToUpdate[key]);
+
   values.push(userId); // добавляем userId для WHERE
+
   const query = `UPDATE users SET ${setQuery}, updated_at = NOW() WHERE id = $${values.length} RETURNING *`;
+
   try {
     const result = await pool.query(query, values);
+
     if (result.rows.length === 0) {
       return null;
     };

@@ -48,6 +48,8 @@ function generateRefreshToken(user) {
 
 /**
  * Проверяет правильность пароля при входе
+ * @param plainPassword
+ * @param hashedPassword
  */
 async function verifyPassword(plainPassword, hashedPassword) {
   return bcrypt.compare(plainPassword, hashedPassword);
@@ -55,16 +57,20 @@ async function verifyPassword(plainPassword, hashedPassword) {
 
 /**
  * Обновляет токены при истечении access-токена
+ * @param req
+ * @param res
  */
 async function refreshAccessToken(req, res) {
   try {
     const { refreshToken } = req.body;
+
     if (!refreshToken) {
       return res.status(400).json({ error: 'refreshToken is required' });
     }
 
     // Проверяем наличие токена в базе
     const storedToken = await authModel.getRefreshToken(refreshToken);
+
     if (!storedToken) {
       return res.status(403).json({ error: 'Invalid refresh token' });
     }
@@ -72,6 +78,7 @@ async function refreshAccessToken(req, res) {
     // Проверяем срок жизни
     if (new Date(storedToken.expires_at) < new Date()) {
       await authModel.deleteRefreshToken(refreshToken);
+
       return res.status(403).json({ error: 'Refresh token expired' });
     }
 
@@ -121,12 +128,13 @@ async function refreshAccessToken(req, res) {
 
 /**
  * Проверяет access-токен
+ * @param token
  */
 function verifyAccessToken(token) {
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    throw new Error('Invalid or expired access token');
+    throw new Error('Invalid or expired access token', err.message);
   }
 };
 
@@ -189,21 +197,31 @@ async function registerUser(req, res) {
  * @throws {Error} Если произошла ошибка при логине или введены неверные данные.
  */
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function loginUser(req, res) {
   try {
     const { username, password } = req.body;
+
     if (!username || !password) {
       return res.status(400).json({ error: 'username and password are required' });
     }
+
     const user = await userModel.getUserByName(username);
+
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
      // Проверяем пароль
     const valid = await bcrypt.compare(password, user.password_hash);
+
     if (!valid) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
+    
 // Формируем полезную нагрузку токена
     const payload = { id: user.id, username: user.username, role: user.role };
     // Генерируем токены

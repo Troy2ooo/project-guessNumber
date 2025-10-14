@@ -27,6 +27,10 @@ const db = require('../../db');
  */
 
   // Проверяем, существует ли токен и не истёк ли
+  /**
+   *
+   * @param token
+   */
   async function getRefreshToken(token) {
     const query = `SELECT * FROM refresh_tokens WHERE token = $1`;
     const result = await db.query(query, [token]);
@@ -38,6 +42,10 @@ const db = require('../../db');
  * @param {string} token
  */
 
+  /**
+   *
+   * @param token
+   */
   async function deleteRefreshToken(token) {
     const query = `DELETE FROM refresh_tokens WHERE token = $1`;
     await db.query(query, [token]);
@@ -45,12 +53,12 @@ const db = require('../../db');
 
 
   /**
- * Обновляет refresh-токен (удаляет старый и сохраняет новый)
- * @param {number} userId
- * @param {string} oldToken
- * @param {string} newToken
- * @param {string|number} ttl
- */
+   * Обновляет refresh-токен (удаляет старый и сохраняет новый)
+   * @param {number} userId
+   * @param {string} oldToken
+   * @param {string} newToken
+   * @param {string|number} ttl
+   */
 async function replaceRefreshToken(userId, oldToken, newToken, ttl) {
   await deleteRefreshToken(oldToken);
   await refreshToken(userId, newToken, ttl);

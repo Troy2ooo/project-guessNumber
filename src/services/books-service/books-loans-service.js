@@ -68,6 +68,11 @@ async function getLoan(req, res) {
  */
 
 // доработать
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function checkoutBook(req, res) {
   const bookId = req.params.id;
   
