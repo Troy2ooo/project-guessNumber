@@ -1,5 +1,12 @@
+/**
+ * Инициализирует таблицы в базе данных, если они отсутствуют.
+ * @module database/initMigrations
+ */
 const db = require('../../db');
 
+/**
+ *
+ */
 async function createTables() {
   try {
     await db.query(`
@@ -53,6 +60,14 @@ async function createTables() {
         );
 
 
+        CREATE TABLE IF NOT EXISTS refresh_tokens (
+          id SERIAL PRIMARY KEY,
+          user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          token TEXT NOT NULL UNIQUE,
+          expires_at TIMESTAMP NOT NULL,
+          created_at TIMESTAMP DEFAULT now()
+        );
+
       `);
     console.log("Таблицы созданы");
   } catch (error) {
@@ -61,5 +76,3 @@ async function createTables() {
 }
 
 createTables();
-
-//   exports.createTables = createTables;

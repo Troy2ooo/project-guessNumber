@@ -1,5 +1,9 @@
+
 const db = require('../db');
 
+/**
+ *
+ */
 async function seedData() {
   try {
     console.log('🚀 Начинаем заполнение таблиц...');

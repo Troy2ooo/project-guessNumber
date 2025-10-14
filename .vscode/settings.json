@@ -1,0 +1,12 @@
+{
+    "editor.fontWeight": "normal",
+    "editor.fontVariations": false,
+    "prettier.configPath": "/ilya kherson/project/project-guessNumber/.prettierrc.js",
+    "javascript.updateImportsOnFileMove.enabled": "prompt",
+    "typescript.updateImportsOnFileMove.enabled": "prompt",
+    "javascript.preferences.importModuleSpecifier": "relative",
+    "typescript.preferences.importModuleSpecifier": "relative"
+
+
+
+}
