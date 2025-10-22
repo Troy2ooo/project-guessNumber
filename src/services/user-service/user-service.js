@@ -152,7 +152,6 @@ async function deleteUser(req, res) {
   }
 }
 
-
 /**
  * Обновляет имя и/или email пользователя.
  *

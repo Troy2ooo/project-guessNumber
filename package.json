@@ -4,9 +4,11 @@
   "description": "\"Онлайн библиотека\".",
   "main": "test.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "start:dev": "nodemon index.js"
+    "test": "jest --watch",
+    "start": "node dist/index.js",
+    "start:dev": "nodemon --exec ts-node src/index.js",
+    "build": "tsc"
+
   },
   "repository": {
     "type": "git",
@@ -31,11 +33,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.8.1",
     "eslint": "^9.37.0",
     "eslint-plugin-jsdoc": "^61.1.0",
     "eslint-plugin-n": "^17.23.1",
     "eslint-plugin-promise": "^7.2.1",
     "globals": "^16.4.0",
-    "nodemon": "^3.1.10"
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.10",
+    "ts-jest": "^29.4.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

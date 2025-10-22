@@ -12,7 +12,21 @@ const db = require('../../db');
  * @param {string|number} ttl - срок жизни (например, '7d')
  */
   async function refreshToken(userId, token, ttl) {
-    const query = `
+  // Проверяем, есть ли уже запись для userId
+  const selectQuery = 'SELECT 1 FROM refresh_tokens WHERE user_id = $1';
+  const result = await db.query(selectQuery, [userId]);
+
+  if (result.rowCount > 0) {
+    // Запись есть — обновляем
+    const updateQuery = `
+      UPDATE refresh_tokens
+      SET token = $2, expires_at = $3
+      WHERE user_id = $1
+    `;
+    await db.query(updateQuery, [userId, token, ttl]);
+  } else {
+    // Записи нет — вставляем новую
+    const insertQuery = `
       INSERT INTO refresh_tokens (user_id, token, expires_at)
       VALUES ($1, $2, $3)
       ON CONFLICT (user_id) DO UPDATE
@@ -20,6 +34,7 @@ const db = require('../../db');
     `;
     await db.query(query, [userId, token, ttl]);
   };
+};
 
 /**
  * Возвращает refresh-токен по его строке
@@ -42,10 +57,6 @@ const db = require('../../db');
  * @param {string} token
  */
 
-  /**
-   *
-   * @param token
-   */
   async function deleteRefreshToken(token) {
     const query = `DELETE FROM refresh_tokens WHERE token = $1`;
     await db.query(query, [token]);
@@ -53,12 +64,12 @@ const db = require('../../db');
 
 
   /**
-   * Обновляет refresh-токен (удаляет старый и сохраняет новый)
-   * @param {number} userId
-   * @param {string} oldToken
-   * @param {string} newToken
-   * @param {string|number} ttl
-   */
+ * Обновляет refresh-токен (удаляет старый и сохраняет новый)
+ * @param {number} userId
+ * @param {string} oldToken
+ * @param {string} newToken
+ * @param {string|number} ttl
+ */
 async function replaceRefreshToken(userId, oldToken, newToken, ttl) {
   await deleteRefreshToken(oldToken);
   await refreshToken(userId, newToken, ttl);
@@ -66,4 +77,4 @@ async function replaceRefreshToken(userId, oldToken, newToken, ttl) {
 
 
 
-module.exports = { refreshToken, getRefreshToken, deleteRefreshToken, replaceRefreshToken  }
+module.exports = { refreshToken, getRefreshToken, deleteRefreshToken, replaceRefreshToken }
