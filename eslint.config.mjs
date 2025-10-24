@@ -2,21 +2,27 @@
 import globals from "globals";
 import pluginJsdoc from "eslint-plugin-jsdoc";
 import pluginN from "eslint-plugin-n";
+import pluginTs from '@typescript-eslint/eslint-plugin';
 import pluginPromise from "eslint-plugin-promise";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig({
   languageOptions: {
-    ecmaVersion: 2024,
-    sourceType: "module",
+    parser: '@typescript-eslint/parser',
     globals: globals.node,
+    parserOptions: {
+    project: './tsconfig.json',
+    ecmaVersion: 2024,
+    sourceType: 'module',
+  }
   },
-  plugins: {
-    // n: pluginN,         
+  plugins: {         
+    '@typescript-eslint': pluginTs,
     jsdoc: pluginJsdoc,
     promise: pluginPromise,
   },
   extends: [
+    'plugin:@typescript-eslint/recommended',
     "plugin:prettier/recommended",
   ],
   rules: {

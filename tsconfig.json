@@ -1,13 +1,22 @@
 {
+  "include": ["src"],
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "target": "es5",
+  "module": "commonjs",
+  "lib": ["dom", "es2015", "es2016"],
+  "allowJs": true,
+  "checkJs": false,
+  "jsx": "react",
+  "strict": true,
+  "noImplicitAny": false,
+  "strictNullChecks": false,
+  "baseUrl": "./src",
+  "typeRoots": [
+  "./src/declaration.d.ts",
+  "./node_modules/@types"
+  ],
+  "esModuleInterop": true,
+  "skipLibCheck": true,
+  "forceConsistentCasingInFileNames": true
+  }
 }

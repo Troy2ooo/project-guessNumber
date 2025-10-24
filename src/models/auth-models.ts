@@ -3,6 +3,7 @@
  * Работа с таблицей refresh_tokens
  */
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'db'.
 const db = require('../../db');
 
 /**
@@ -11,7 +12,7 @@ const db = require('../../db');
  * @param {string} token - сам токен
  * @param {string|number} ttl - срок жизни (например, '7d')
  */
-  async function refreshToken(userId, token, ttl) {
+  async function refreshToken(userId: any, token: any, ttl: any) {
   // Проверяем, есть ли уже запись для userId
   const selectQuery = 'SELECT 1 FROM refresh_tokens WHERE user_id = $1';
   const result = await db.query(selectQuery, [userId]);
@@ -32,6 +33,7 @@ const db = require('../../db');
       ON CONFLICT (user_id) DO UPDATE
       SET token = EXCLUDED.token, expires_at = EXCLUDED.expires_at;
     `;
+    // @ts-expect-error TS(2304): Cannot find name 'query'.
     await db.query(query, [userId, token, ttl]);
   };
 };
@@ -46,7 +48,7 @@ const db = require('../../db');
    *
    * @param token
    */
-  async function getRefreshToken(token) {
+  async function getRefreshToken(token: any) {
     const query = `SELECT * FROM refresh_tokens WHERE token = $1`;
     const result = await db.query(query, [token]);
     return result.rows[0];
@@ -57,7 +59,7 @@ const db = require('../../db');
  * @param {string} token
  */
 
-  async function deleteRefreshToken(token) {
+  async function deleteRefreshToken(token: any) {
     const query = `DELETE FROM refresh_tokens WHERE token = $1`;
     await db.query(query, [token]);
   };
@@ -70,11 +72,12 @@ const db = require('../../db');
  * @param {string} newToken
  * @param {string|number} ttl
  */
-async function replaceRefreshToken(userId, oldToken, newToken, ttl) {
+async function replaceRefreshToken(userId: any, oldToken: any, newToken: any, ttl: any) {
   await deleteRefreshToken(oldToken);
   await refreshToken(userId, newToken, ttl);
 }
 
 
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { refreshToken, getRefreshToken, deleteRefreshToken, replaceRefreshToken }

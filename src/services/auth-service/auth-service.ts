@@ -8,16 +8,26 @@
  * - получения профиля текущего пользователя.
  */
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'bcrypt'.
 const bcrypt = require('bcryptjs');
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'jwt'.
 const jwt = require('jsonwebtoken');
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'userModel'... Remove this comment to see the full error message
 const userModel = require('../../models/user-model');
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const authModel = require('../../models/auth-models')
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const ms = require('ms');
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'JWT_SECRET... Remove this comment to see the full error message
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
+// @ts-expect-error TS(2580): Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
+// @ts-expect-error TS(2580): Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret';
+// @ts-expect-error TS(2580): Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
 const ACCESS_TOKEN_TTL = process.env.ACCESS_TOKEN_TTL || '2h'; // 15 минут
+// @ts-expect-error TS(2580): Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
 const REFRESH_TOKEN_TTL = process.env.REFRESH_TOKEN_TTL || '7d';
 
 /**
@@ -25,7 +35,7 @@ const REFRESH_TOKEN_TTL = process.env.REFRESH_TOKEN_TTL || '7d';
  * @param {Object} user - объект пользователя ({ id, username, role })
  * @returns {string} access token
  */
-function generateAccessToken(user) {
+function generateAccessToken(user: any) {
   return jwt.sign(
     { id: user.id, username: user.username, role: user.role },
     JWT_SECRET,
@@ -38,7 +48,7 @@ function generateAccessToken(user) {
  * @param {Object} user - объект пользователя ({ id, username })
  * @returns {string} refresh token
  */
-function generateRefreshToken(user) {
+function generateRefreshToken(user: any) {
   return jwt.sign(
     { id: user.id, username: user.username },
     JWT_REFRESH_SECRET,
@@ -51,7 +61,7 @@ function generateRefreshToken(user) {
  * @param plainPassword
  * @param hashedPassword
  */
-async function verifyPassword(plainPassword, hashedPassword) {
+async function verifyPassword(plainPassword: any, hashedPassword: any) {
   return bcrypt.compare(plainPassword, hashedPassword);
 };
 
@@ -60,7 +70,7 @@ async function verifyPassword(plainPassword, hashedPassword) {
  * @param req
  * @param res
  */
-async function refreshAccessToken(req, res) {
+async function refreshAccessToken(req: any, res: any) {
   try {
     const { refreshToken } = req.body;
 
@@ -130,10 +140,11 @@ async function refreshAccessToken(req, res) {
  * Проверяет access-токен
  * @param token
  */
-function verifyAccessToken(token) {
+function verifyAccessToken(token: any) {
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (err) {
+    // @ts-expect-error TS(2554): Expected 0-1 arguments, but got 2.
     throw new Error('Invalid or expired access token', err.message);
   }
 };
@@ -149,7 +160,7 @@ function verifyAccessToken(token) {
  * @returns {Promise<void>} Отправляет JSON с данными нового пользователя.
  * @throws {Error} Если произошла ошибка при регистрации или пользователь уже существует.
  */
-async function registerUser(req, res) {
+async function registerUser(req: any, res: any) {
   try {
     const { username, email, password, role } = req.body;
 
@@ -202,7 +213,7 @@ async function registerUser(req, res) {
  * @param req
  * @param res
  */
-async function loginUser(req, res) {
+async function loginUser(req: any, res: any) {
   try {
     const { username, password } = req.body;
 
@@ -254,7 +265,7 @@ async function loginUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными профиля пользователя.
  * @throws {Error} Если пользователь не найден или произошла ошибка сервера.
  */
-async function getProfile(req, res) {
+async function getProfile(req: any, res: any) {
   try {
     const userId = req.user.id;
     const user = await userModel.getUser(userId);
@@ -279,6 +290,7 @@ async function getProfile(req, res) {
   }
 }
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { registerUser, loginUser, getProfile, 
   generateAccessToken,
   generateRefreshToken,

@@ -11,6 +11,7 @@
  */
 
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'pool'.
 const pool = require('../../db');
 
 
@@ -34,6 +35,7 @@ const pool = require('../../db');
  * @returns {Promise<BookLoan[]>} Массив всех записей о займах.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
+// @ts-expect-error TS(2393): Duplicate function implementation.
 async function getAllLoans() {
   const query = 'SELECT * FROM book_loans';
   const result = await pool.query(query);
@@ -51,7 +53,8 @@ async function getAllLoans() {
  * @returns {Promise<BookLoan>} Объект с информацией о займе.
  * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
  */
-async function getLoan(loanId) {
+// @ts-expect-error TS(2393): Duplicate function implementation.
+async function getLoan(loanId: any) {
   const query = 'SELECT * FROM book_loans WHERE id = $1;';
   const value = [loanId];
   const result = await pool.query(query, value);
@@ -70,7 +73,8 @@ async function getLoan(loanId) {
  * @returns {Promise<BookLoan>} Объект с данными о созданной записи займа.
  * @throws {Error} Если произошла ошибка при добавлении записи.
  */
-async function checkoutBook(bookId, userId) {
+// @ts-expect-error TS(2393): Duplicate function implementation.
+async function checkoutBook(bookId: any, userId: any) {
   const query = `
     INSERT INTO book_loans (book_id, user_id, taken_at)
     VALUES ($1, $2, NOW())
@@ -93,7 +97,8 @@ async function checkoutBook(bookId, userId) {
  * @returns {Promise<BookLoan>} Обновлённая запись займа с датой возврата.
  * @throws {Error} Если запись не найдена или книга уже была возвращена.
  */
-async function returnBook(bookId, userId) {
+// @ts-expect-error TS(2393): Duplicate function implementation.
+async function returnBook(bookId: any, userId: any) {
   const query = `
     UPDATE book_loans
     SET returned_at = NOW()
@@ -106,4 +111,5 @@ async function returnBook(bookId, userId) {
   return result.rows[0];
 }
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { getAllLoans, getLoan, checkoutBook, returnBook };

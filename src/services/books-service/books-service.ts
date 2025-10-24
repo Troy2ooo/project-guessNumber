@@ -11,6 +11,7 @@
  * - удаления книги по ID,
  * - обновления статуса доступности книги.
  */
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'bookModel'... Remove this comment to see the full error message
 const bookModel = require('../../models/book-model');
 
 
@@ -24,12 +25,13 @@ const bookModel = require('../../models/book-model');
  * @returns {Promise<void>} Отправляет JSON с массивом всех книг.
  * @throws {Error} Если произошла ошибка при получении книг.
  */
-async function getAllBooks(req, res) {
+async function getAllBooks(req: any, res: any) {
   try {
     const books = await bookModel.getAllBooks();
 
     res.json(books);
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error getting books', error: error.message });
   }
 }
@@ -45,11 +47,12 @@ async function getAllBooks(req, res) {
  * @returns {Promise<void>} Отправляет JSON с массивом всех книг и их авторов.
  * @throws {Error} Если произошла ошибка при получении книг.
  */
-async function getAllBooksWithAuthors(req, res) {
+async function getAllBooksWithAuthors(req: any, res: any) {
   try {
     const books = await bookModel.getAllBooksWithAuthors();
     res.json(books);
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error getting books', error: error.message });
   }
 }
@@ -66,7 +69,7 @@ async function getAllBooksWithAuthors(req, res) {
  * @returns {Promise<void>} Отправляет JSON с объектом книги.
  * @throws {Error} Если произошла ошибка при получении книги.
  */
-async function getBookById(req, res) {
+async function getBookById(req: any, res: any) {
   const bookId = req.params.id;
 
   try {
@@ -74,6 +77,7 @@ async function getBookById(req, res) {
 
     res.json(book);
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 }
@@ -89,7 +93,7 @@ async function getBookById(req, res) {
  * @returns {Promise<void>} Отправляет JSON с объектом книги и автором.
  * @throws {Error} Если книга не найдена или произошла ошибка сервера.
  */
-async function getBookWithAuthor(req, res) {
+async function getBookWithAuthor(req: any, res: any) {
   try {
     const bookId = req.params.id;
     const book = await bookModel.getBookWithAuthorById(bookId);
@@ -116,7 +120,7 @@ async function getBookWithAuthor(req, res) {
  * @returns {Promise<void>} Отправляет JSON с объектом созданной книги.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-async function createBook(req, res) {
+async function createBook(req: any, res: any) {
   const book = {
     title: req.body.title,
     description: req.body.description,
@@ -128,6 +132,7 @@ async function createBook(req, res) {
 
     res.json({ message: 'Book created successfully', book: newBook });
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 }
@@ -142,7 +147,7 @@ async function createBook(req, res) {
  * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом удаленной книги или сообщение об ошибке.
  */
-async function deleteBook(req, res) {
+async function deleteBook(req: any, res: any) {
   const bookId = req.params.id;
 
   const deletedBook = await bookModel.deleteBook(bookId);
@@ -166,7 +171,7 @@ async function deleteBook(req, res) {
  * @returns {Promise<void>} Отправляет JSON с обновленным объектом книги.
  * @throws {Error} Если произошла ошибка при обновлении книги.
  */
-async function updateBookStatus(req, res) {
+async function updateBookStatus(req: any, res: any) {
   try {
     const bookId = req.params.id;
     const { available } = req.body;
@@ -191,6 +196,7 @@ async function updateBookStatus(req, res) {
   }
 }
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = {
   getAllBooks,
   getAllBooksWithAuthors,

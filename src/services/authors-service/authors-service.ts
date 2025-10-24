@@ -8,6 +8,7 @@
  * - создания нового автора,
  * - удаления автора по ID.
  */
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const authorsModel = require('../../models/authors-model');
 
 
@@ -21,12 +22,13 @@ const authorsModel = require('../../models/authors-model');
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при получении авторов.
  */
-async function getAllAuthors(req, res) {
+async function getAllAuthors(req: any, res: any) {
   try {
     const authors = await authorsModel.getAllAuthors();
 
     res.json(authors);
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error getting authors', error: error.message });
   }
 }
@@ -44,7 +46,7 @@ async function getAllAuthors(req, res) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при получении автора.
  */
-async function getAuthor(req, res) {
+async function getAuthor(req: any, res: any) {
   const authorId = req.params.id;
 
   try {
@@ -52,6 +54,7 @@ async function getAuthor(req, res) {
 
     res.json(author);
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error getting author', error: error.message });
   }
 };
@@ -71,7 +74,7 @@ async function getAuthor(req, res) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при создании автора.
  */
-async function createAuthor(req, res) {
+async function createAuthor(req: any, res: any) {
   const author = {
     name: req.body.name,
     bio: req.body.bio,
@@ -82,6 +85,7 @@ async function createAuthor(req, res) {
 
     res.json({ message: 'Author created successfully', author: newAuthor });
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error creating author', error: error.message });
   }
 }
@@ -99,7 +103,7 @@ async function createAuthor(req, res) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при удалении автора.
  */
-async function deleteAuthor (req, res) {
+async function deleteAuthor (req: any, res: any) {
   const authorId = req.params.id;
 
   const deletedAuthor = await authorsModel.deleteAuthor (authorId);
@@ -111,4 +115,5 @@ async function deleteAuthor (req, res) {
   }
 }
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { getAllAuthors, getAuthor, createAuthor, deleteAuthor };

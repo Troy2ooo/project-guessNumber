@@ -8,7 +8,9 @@
  * - выдачи книги пользователю (checkout),
  * - возврата книги пользователем.
  */
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const loansModel = require('../../models/book-loans-model');
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'bookModel'... Remove this comment to see the full error message
 const bookModel = require('../../models/book-model')
 
 
@@ -22,12 +24,13 @@ const bookModel = require('../../models/book-model')
  * @returns {Promise<void>} Отправляет JSON с массивом всех займов.
  * @throws {Error} Если произошла ошибка при получении займов.
  */
-async function getAllLoans(req, res) {
+async function getAllLoans(req: any, res: any) {
   try {
     const loans = await loansModel.getAllLoans();
 
     res.json(loans);
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error getting loans', error: error.message });
   }
 }
@@ -43,7 +46,7 @@ async function getAllLoans(req, res) {
  * @returns {Promise<void>} Отправляет JSON с объектом займа.
  * @throws {Error} Если произошла ошибка при получении займа.
  */
-async function getLoan(req, res) {
+async function getLoan(req: any, res: any) {
   const loanId = req.params.id;
 
   try {
@@ -51,6 +54,7 @@ async function getLoan(req, res) {
 
     res.json(loan);
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error creating loan', error: error.message });
   }
 };
@@ -73,7 +77,7 @@ async function getLoan(req, res) {
  * @param req
  * @param res
  */
-async function checkoutBook(req, res) {
+async function checkoutBook(req: any, res: any) {
   const bookId = req.params.id;
   
   try {
@@ -107,7 +111,7 @@ async function checkoutBook(req, res) {
  * @returns {Promise<void>} Отправляет JSON с объектом возврата займа.
  * @throws {Error} Если не найден активный заем или произошла ошибка сервера.
  */
-async function returnBook(req, res) {
+async function returnBook(req: any, res: any) {
   const bookId = req.params.id;
   const userId = req.body.user_id;
 
@@ -138,4 +142,5 @@ async function returnBook(req, res) {
 
 
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { getAllLoans, getLoan, checkoutBook, returnBook };

@@ -10,7 +10,9 @@
  * - обновление информации пользователя,
  * - обновление электронной почты пользователя.
  */
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'bcrypt'.
 const bcrypt = require('bcryptjs');
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'userModel'... Remove this comment to see the full error message
 const userModel = require('../../models/user-model');
 
 /**
@@ -23,14 +25,14 @@ const userModel = require('../../models/user-model');
  * @returns {Promise<void>} Отправляет JSON с массивом пользователей.
  * @throws {Error} Если произошла ошибка при выполнении запроса к базе данных.
  */
-async function getAllUsers(req, res) {
+async function getAllUsers(req: any, res: any) {
   try {
     const users = await userModel.getAllUsers();
     // Метод .map():
     // проходит по каждому элементу массива;
     // применяет к нему функцию, которую ты передаёшь;
     // возвращает новый массив с результатами этой функции.
-    const usersData = users.map(user => ({
+    const usersData = users.map((user: any) => ({
       id: user.id,
       name: user.username,
       mail: user.email,
@@ -42,6 +44,7 @@ async function getAllUsers(req, res) {
       usersData
     });
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error getting all users', error: error.message });
   }
 };
@@ -57,7 +60,7 @@ async function getAllUsers(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными пользователя.
  * @throws {Error} Если произошла ошибка при выполнении запроса к базе данных.
  */
-async function getOneUser(req, res) {
+async function getOneUser(req: any, res: any) {
   const userId = req.params.id;
   try {
     console.log(userId);
@@ -70,6 +73,7 @@ async function getOneUser(req, res) {
       role: user.role }
     });
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error getting user', error: error.message });
   }
 };
@@ -85,7 +89,7 @@ async function getOneUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными созданного пользователя.
  * @throws {Error} Если произошла ошибка при создании пользователя или нарушении уникальности.
  */
-async function createUser(req, res) {
+async function createUser(req: any, res: any) {
   try {
     const { name, mail, password, role } = req.body;
 
@@ -123,6 +127,7 @@ async function createUser(req, res) {
     });
   } catch (error) {
     console.error('Error creating user:', error);
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error creating user', error: error.message });
   }
 }
@@ -138,7 +143,7 @@ async function createUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными удаленного пользователя.
  * @throws {Error} Если произошла ошибка при удалении пользователя.
  */
-async function deleteUser(req, res) {
+async function deleteUser(req: any, res: any) {
   const userId = req.params.id;
   try {
     const deletedUser = await userModel.deleteUser(userId);
@@ -148,6 +153,7 @@ async function deleteUser(req, res) {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
+    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
 }
@@ -163,7 +169,7 @@ async function deleteUser(req, res) {
  * @throws {Error} Если произошла ошибка при обновлении.
  */
 //донастроить http
-async function updateUser(req, res) {
+async function updateUser(req: any, res: any) {
   try {
     const { userName, email } = req.body;
     const userId = req.params.id
@@ -179,10 +185,12 @@ async function updateUser(req, res) {
     const fieldsToUpdate = {};
 
     if (userName) {
+      // @ts-expect-error TS(2339): Property 'username' does not exist on type '{}'.
       fieldsToUpdate.username = userName
     };
 
     if (email) {
+      // @ts-expect-error TS(2339): Property 'email' does not exist on type '{}'.
       fieldsToUpdate.email = email
     };
 
@@ -210,7 +218,7 @@ async function updateUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с обновленным email пользователя.
  * @throws {Error} Если произошла ошибка при обновлении email.
  */
-async function updateUserMail(req, res) {
+async function updateUserMail(req: any, res: any) {
   try {
     const { userId, newMail } = req.body;
     const result = await userModel.updateUserMailById(newMail, userId);
@@ -226,4 +234,5 @@ async function updateUserMail(req, res) {
   }
 }
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { getAllUsers, getOneUser, createUser, deleteUser, updateUser, updateUserMail };
