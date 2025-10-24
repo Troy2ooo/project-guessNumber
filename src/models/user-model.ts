@@ -1,3 +1,5 @@
+import {pool} from '../../db';
+
 /**
  * @module UserModel
  * Модуль для работы с таблицей `users` в базе данных.
@@ -11,8 +13,6 @@
  * - обновление информации пользователя.
  */
 
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'pool'.
-const pool = require('../../db');
 
 
 /**
@@ -32,12 +32,11 @@ const pool = require('../../db');
  * Получает всех пользователей.
  * 
  * @async
- * @function getAllUsers
+ * @function getAll
  * @returns {Promise<User[]>} Массив всех пользователей.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function getAllUsers() {
+async function getAll() {
   const query = 'SELECT * FROM users';
   const result = await pool.query(query);
   return result.rows;
@@ -48,12 +47,12 @@ async function getAllUsers() {
  * Получает пользователя по его ID.
  * 
  * @async
- * @function getUser
+ * @function getOneById
  * @param {number} userId - Уникальный идентификатор пользователя.
  * @returns {Promise<User|null>} Объект пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-async function getUser(userId: any) {
+async function getOneById(userId: any) {
   const query = 'SELECT * FROM users WHERE id = $1;';
   const value = [userId];
   const result = await pool.query(query, value);
@@ -66,7 +65,7 @@ async function getUser(userId: any) {
  *
  * @param username
  */
-async function getUserByName(username: any) {
+async function getOneByName(username: any) {
   if (!username) {
     throw new Error('Username is required');
   }
@@ -90,7 +89,7 @@ async function getUserByName(username: any) {
  * Создает нового пользователя.
  * 
  * @async
- * @function createUser
+ * @function create
  * @param {string} userName - Имя пользователя.
  * @param {string} userEmail - Электронная почта пользователя.
  * @param {string} password_hash - Хэш пароля.
@@ -98,8 +97,7 @@ async function getUserByName(username: any) {
  * @returns {Promise<User>} Объект созданного пользователя.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function createUser(userName: any, userEmail: any, password_hash: any, role = 'user') {
+async function create(userName: any, userEmail: any, password_hash: any, role = 'user') {
   const query = 'INSERT INTO users (username, email, password_hash, role ) values ($1, $2, $3, $4) RETURNING * ';
   const values = [userName, userEmail, password_hash, role];
   try {
@@ -115,13 +113,12 @@ async function createUser(userName: any, userEmail: any, password_hash: any, rol
  * Удаляет пользователя по ID.
  * 
  * @async
- * @function deleteUser
+ * @function remove
  * @param {number} userId - Уникальный идентификатор пользователя.
  * @returns {Promise<User|null>} Объект удаленного пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function deleteUser(userId: any) {
+async function remove(userId: any) {
   // RETURNING * - какие данные должны быть возвращены после выполнения операции удаления.
   // благодаря returning *, в логах result будет содержаться объект с удаленной записью
   const query = 'DELETE FROM users WHERE id = $1  RETURNING *';
@@ -136,14 +133,13 @@ async function deleteUser(userId: any) {
  * Обновляет поля пользователя.
  * 
  * @async
- * @function updateUser
+ * @function update
  * @param {number} userId - ID пользователя.
  * @param {Object} fieldsToUpdate - Объект с полями для обновления. Пример: { username: 'newName', email: 'newEmail' }.
  * @returns {Promise<User|null>} Объект обновленного пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function updateUser(userId: any, fieldsToUpdate: any) {
+async function update(userId: any, fieldsToUpdate: any) {
   // Проверяем, что есть что обновлять
   const keys = Object.keys(fieldsToUpdate);
 
@@ -175,34 +171,41 @@ async function updateUser(userId: any, fieldsToUpdate: any) {
 };
 
 
+type User = {
+  id: number;
+  username: string;
+  email: string;
+  password_hash: string;
+  role: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 /**
  * Обновляет эл. почту пользователя.
  * 
  * @async
- * @function updateUserMail
+ * @function updateMail
  * @param {string} newMail - новая почта пользователя.
  * @param {number} userId - ID пользователя.
  * @returns {Promise<User|null>} Объект обновленного пользователя или null, если не найден.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function updateUserMail(newMail: any, userId: any) {
-  const query = 'UPDATE users SET mail = $1 WHERE id = $2 RETURNING *';
+async function updateMail(newMail: string, userId: number) {
+  const query: string = 'UPDATE users SET mail = $1 WHERE id = $2 RETURNING *';
   const values = [newMail, userId];
-  const result = await pool.query(query, values);
+  const result = await pool.query<User>(query, values);
 
   if (result.rowCount === 0) {
     return null;
   }
 
-  return result.rows[0];
+  const { password_hash, created_at, updated_at, ...updatedUser } = result.rows[0];
+ 
+  console.log({ password_hash, created_at, updated_at, updatedUser })
+  
+  return updatedUser;
 };
 
 
-
-
-
-
-
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = { updateUserMail, updateUser, deleteUser, getAllUsers, createUser, getUser, getUserByName };
+export { updateMail, update, remove, getAll, create, getOneById, getOneByName };

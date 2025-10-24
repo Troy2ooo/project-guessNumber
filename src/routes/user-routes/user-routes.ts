@@ -1,16 +1,21 @@
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'express'.
-const express = require('express');
-// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const userService = require('../../services/user-service/user-service');
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'router'.
+"use strict";
+import express from "express";
+import {
+    getAllUsers,
+    getOneUser,
+    createUser,
+    deleteUser,
+    updateUser,
+    updateUserMail
+} from '../../services/user-service/user-service';
+
 const router = express.Router();
 
-router.get('/', userService.getAllUsers);
-router.get('/:id', userService.getOneUser);
-router.post('/', userService.createUser);
-router.put('/:id', userService.updateUser);
-router.patch('/', userService.updateUserMail);
-router.delete('/:id', userService.deleteUser);
+router.get('/', getAllUsers);
+router.get('/:id', getOneUser);
+router.post('/', createUser);
+router.put('/:id', updateUser);
+router.patch('/', updateUserMail);
+router.delete('/:id', deleteUser);
 
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = router;
+export default router;

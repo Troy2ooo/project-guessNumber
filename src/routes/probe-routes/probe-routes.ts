@@ -1,16 +1,10 @@
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'express'.
-const express = require('express');
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getHello'.
-const { getHello } = require('../../services/probe-service/get-hello');
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getTime'.
-const { getTime } = require('../../services/probe-service/get-time-for-db');
+"use strict";
+import express  from "express";
 
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'router'.
-const router = express.Router();
-
+import {getHello} from '../../services/probe-service/get-hello';
+var getTime = require('../../services/probe-service/get-time-for-db').getTime;
+var router = express.Router();
 router.get('/', getHello);
 router.get('/db', getTime);
 
-
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = router;
+export default router;

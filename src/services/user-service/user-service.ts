@@ -1,3 +1,9 @@
+import { Request, Response, NextFunction } from 'express';
+import { updateMail, update, remove, getAll, create, getOneById, getOneByName } from '../../models/user-model';
+
+
+
+
 /**
  * @module UserService
  * Сервисный модуль для работы с пользователями.
@@ -10,10 +16,7 @@
  * - обновление информации пользователя,
  * - обновление электронной почты пользователя.
  */
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'bcrypt'.
 const bcrypt = require('bcryptjs');
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'userModel'... Remove this comment to see the full error message
-const userModel = require('../../models/user-model');
 
 /**
  * Получает всех пользователей.
@@ -27,7 +30,7 @@ const userModel = require('../../models/user-model');
  */
 async function getAllUsers(req: any, res: any) {
   try {
-    const users = await userModel.getAllUsers();
+    const users = await getAll();
     // Метод .map():
     // проходит по каждому элементу массива;
     // применяет к нему функцию, которую ты передаёшь;
@@ -43,8 +46,7 @@ async function getAllUsers(req: any, res: any) {
       message: 'Here we go, all users!',
       usersData
     });
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error getting all users', error: error.message });
   }
 };
@@ -64,7 +66,7 @@ async function getOneUser(req: any, res: any) {
   const userId = req.params.id;
   try {
     console.log(userId);
-    const user = await userModel.getUser(userId);
+    const user = await getOneById(userId);
     res.json({ message: 'Here we go user',
       userData: {
         id: user.id,
@@ -72,8 +74,7 @@ async function getOneUser(req: any, res: any) {
       mail: user.email,
       role: user.role }
     });
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error getting user', error: error.message });
   }
 };
@@ -115,7 +116,7 @@ async function createUser(req: any, res: any) {
         return res.status(403).json({ error: 'Only admins can assign the admin role' });
       }
     }
-    const newUser = await userModel.createUser(name, mail, password_hash, userRole);
+    const newUser = await create(name, mail, password_hash, userRole);
     res.status(201).json({
       message: 'User created successfully',
       user: {
@@ -125,9 +126,8 @@ async function createUser(req: any, res: any) {
         role: newUser.role,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating user:', error);
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
     res.status(500).json({ message: 'Error creating user', error: error.message });
   }
 }
@@ -146,14 +146,13 @@ async function createUser(req: any, res: any) {
 async function deleteUser(req: any, res: any) {
   const userId = req.params.id;
   try {
-    const deletedUser = await userModel.deleteUser(userId);
+    const deletedUser = await remove(userId);
     if (deletedUser) {
       res.json({ message: 'User deleted successfully', user: deletedUser });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
 }
@@ -194,19 +193,23 @@ async function updateUser(req: any, res: any) {
       fieldsToUpdate.email = email
     };
 
-    const result = await userModel.updateUser(userId, fieldsToUpdate);
+    const result = await update(userId, fieldsToUpdate);
 
     if (!result) {
       return res.status(404).json({ message: 'User not found or nothing to update' });
     }
 
     res.status(200).json({ message: 'User updated successfully', user: result });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
+type UpdateUserMailReqest = {
+  userId: number;
+  newMail: string;
+}
 
 /**
  * Обновляет email пользователя.
@@ -218,21 +221,28 @@ async function updateUser(req: any, res: any) {
  * @returns {Promise<void>} Отправляет JSON с обновленным email пользователя.
  * @throws {Error} Если произошла ошибка при обновлении email.
  */
-async function updateUserMail(req: any, res: any) {
+async function updateUserMail(req: Request, res: Response) {
+  if (!req.body) {
+    console.log("Paramets are reqiered")
+    res.status(400).json({ message: "Paramets are reqiered" })
+    return
+  }
+
   try {
-    const { userId, newMail } = req.body;
-    const result = await userModel.updateUserMailById(newMail, userId);
+
+    const body: UpdateUserMailReqest = req.body;
+    const { userId, newMail } = body;
+    const result = await updateMail(newMail, userId);
 
     if (result) {
       res.status(200).json({ message: 'User email updated', user: result });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
-  } catch (err) {
-    console.error('Error updating user name:', err);
+  } catch (error : any) {
+    console.error('Error updating user name:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
 
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = { getAllUsers, getOneUser, createUser, deleteUser, updateUser, updateUserMail };
+export { getAllUsers, getOneUser, createUser, deleteUser, updateUser, updateUserMail };
