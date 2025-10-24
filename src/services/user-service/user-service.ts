@@ -1,3 +1,9 @@
+import { Request, Response, NextFunction } from 'express';
+import { updateMail, update, remove, getAll, create, getOneById, getOneByName } from '../../models/user-model';
+
+
+
+
 /**
  * @module UserService
  * Сервисный модуль для работы с пользователями.
@@ -11,7 +17,6 @@
  * - обновление электронной почты пользователя.
  */
 const bcrypt = require('bcryptjs');
-const userModel = require('../../models/user-model');
 
 /**
  * Получает всех пользователей.
@@ -23,14 +28,14 @@ const userModel = require('../../models/user-model');
  * @returns {Promise<void>} Отправляет JSON с массивом пользователей.
  * @throws {Error} Если произошла ошибка при выполнении запроса к базе данных.
  */
-async function getAllUsers(req, res) {
+async function getAllUsers(req: any, res: any) {
   try {
-    const users = await userModel.getAllUsers();
+    const users = await getAll();
     // Метод .map():
     // проходит по каждому элементу массива;
     // применяет к нему функцию, которую ты передаёшь;
     // возвращает новый массив с результатами этой функции.
-    const usersData = users.map(user => ({
+    const usersData = users.map((user: any) => ({
       id: user.id,
       name: user.username,
       mail: user.email,
@@ -41,7 +46,7 @@ async function getAllUsers(req, res) {
       message: 'Here we go, all users!',
       usersData
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: 'Error getting all users', error: error.message });
   }
 };
@@ -57,11 +62,11 @@ async function getAllUsers(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными пользователя.
  * @throws {Error} Если произошла ошибка при выполнении запроса к базе данных.
  */
-async function getOneUser(req, res) {
+async function getOneUser(req: any, res: any) {
   const userId = req.params.id;
   try {
     console.log(userId);
-    const user = await userModel.getUser(userId);
+    const user = await getOneById(userId);
     res.json({ message: 'Here we go user',
       userData: {
         id: user.id,
@@ -69,7 +74,7 @@ async function getOneUser(req, res) {
       mail: user.email,
       role: user.role }
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: 'Error getting user', error: error.message });
   }
 };
@@ -85,7 +90,7 @@ async function getOneUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными созданного пользователя.
  * @throws {Error} Если произошла ошибка при создании пользователя или нарушении уникальности.
  */
-async function createUser(req, res) {
+async function createUser(req: any, res: any) {
   try {
     const { name, mail, password, role } = req.body;
 
@@ -111,7 +116,7 @@ async function createUser(req, res) {
         return res.status(403).json({ error: 'Only admins can assign the admin role' });
       }
     }
-    const newUser = await userModel.createUser(name, mail, password_hash, userRole);
+    const newUser = await create(name, mail, password_hash, userRole);
     res.status(201).json({
       message: 'User created successfully',
       user: {
@@ -121,7 +126,7 @@ async function createUser(req, res) {
         role: newUser.role,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating user:', error);
     res.status(500).json({ message: 'Error creating user', error: error.message });
   }
@@ -138,16 +143,16 @@ async function createUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с данными удаленного пользователя.
  * @throws {Error} Если произошла ошибка при удалении пользователя.
  */
-async function deleteUser(req, res) {
+async function deleteUser(req: any, res: any) {
   const userId = req.params.id;
   try {
-    const deletedUser = await userModel.deleteUser(userId);
+    const deletedUser = await remove(userId);
     if (deletedUser) {
       res.json({ message: 'User deleted successfully', user: deletedUser });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
 }
@@ -163,7 +168,7 @@ async function deleteUser(req, res) {
  * @throws {Error} Если произошла ошибка при обновлении.
  */
 //донастроить http
-async function updateUser(req, res) {
+async function updateUser(req: any, res: any) {
   try {
     const { userName, email } = req.body;
     const userId = req.params.id
@@ -179,26 +184,32 @@ async function updateUser(req, res) {
     const fieldsToUpdate = {};
 
     if (userName) {
+      // @ts-expect-error TS(2339): Property 'username' does not exist on type '{}'.
       fieldsToUpdate.username = userName
     };
 
     if (email) {
+      // @ts-expect-error TS(2339): Property 'email' does not exist on type '{}'.
       fieldsToUpdate.email = email
     };
 
-    const result = await userModel.updateUser(userId, fieldsToUpdate);
+    const result = await update(userId, fieldsToUpdate);
 
     if (!result) {
       return res.status(404).json({ message: 'User not found or nothing to update' });
     }
 
     res.status(200).json({ message: 'User updated successfully', user: result });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
+type UpdateUserMailReqest = {
+  userId: number;
+  newMail: string;
+}
 
 /**
  * Обновляет email пользователя.
@@ -210,20 +221,28 @@ async function updateUser(req, res) {
  * @returns {Promise<void>} Отправляет JSON с обновленным email пользователя.
  * @throws {Error} Если произошла ошибка при обновлении email.
  */
-async function updateUserMail(req, res) {
+async function updateUserMail(req: Request, res: Response) {
+  if (!req.body) {
+    console.log("Paramets are reqiered")
+    res.status(400).json({ message: "Paramets are reqiered" })
+    return
+  }
+
   try {
-    const { userId, newMail } = req.body;
-    const result = await userModel.updateUserMailById(newMail, userId);
+
+    const body: UpdateUserMailReqest = req.body;
+    const { userId, newMail } = body;
+    const result = await updateMail(newMail, userId);
 
     if (result) {
       res.status(200).json({ message: 'User email updated', user: result });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
-  } catch (err) {
-    console.error('Error updating user name:', err);
+  } catch (error : any) {
+    console.error('Error updating user name:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
 
-module.exports = { getAllUsers, getOneUser, createUser, deleteUser, updateUser, updateUserMail };
+export { getAllUsers, getOneUser, createUser, deleteUser, updateUser, updateUserMail };
