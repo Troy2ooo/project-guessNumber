@@ -1,7 +1,10 @@
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'jwt'.
-const jwt = require('jsonwebtoken');
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'JWT_SECRET... Remove this comment to see the full error message
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
+const JWT_SECRET: string = process.env.JWT_SECRET || 'dev_secret';
+
+type AuthenticatedRequest = Request & {
+  user?: JwtPayload & { id: number; username: string; role: string };
+}
 
 /**
  * @file Middleware для аутентификации пользователей по JWT.
@@ -28,9 +31,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
  * res.json({ user: req.user });
  * });
  */
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'authentica... Remove this comment to see the full error message
-function authenticateToken(req: any, res: any, next: any) {
-  const authHeader = req.headers['authorization'];
+function authenticateToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return res.status(401).json({ error: 'No authorization header' });
@@ -43,17 +45,18 @@ function authenticateToken(req: any, res: any, next: any) {
   }
 
   const token = parts[1];
-  jwt.verify(token, JWT_SECRET, (err: any, payload: any) => {
+
+  jwt.verify(token, JWT_SECRET, (err, payload) => {
     if (err) {
-      return res.status(403).json({ error: 'Invalid or expired token' })
-  }
-    req.user = payload; // { id, username, role }
+      return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+
+    req.user = payload as AuthenticatedRequest['user'];
+
     next();
   });
 }
-
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = { authenticateToken };
+export { authenticateToken };
 
 
 

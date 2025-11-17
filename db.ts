@@ -3,6 +3,9 @@ import * as dotenv from 'dotenv';
 dotenv.config()
 
 const pool = new Pool({
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 3000, 
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,

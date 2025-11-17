@@ -1,3 +1,5 @@
+import {pool} from '../../db'
+
 /**
  * @module BookModel
  * Модуль для работы с таблицей `book` в базе данных.
@@ -13,10 +15,6 @@
  */
 
 
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'pool'.
-const pool = require('../../db');
-
-
 /**
  * пользовательский тип, описывающий свойства объекта, который содержит данные о книгах.
  * 
@@ -29,35 +27,43 @@ const pool = require('../../db');
  * @property {Date} updated_at - дата и время последнего обновления.
  */
 
+type Book = {
+  id: number;
+  title: string;
+  description: string;
+  available: boolean;
+  created_at: Date;
+  updated_at: Date;
+};
 
 /**
  * Получает все книги из базы данных.
  * 
  * @async
- * @function getAllBooks
+ * @function getAll
  * @returns {Promise<Book[]>} Массив всех книг.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function getAllBooks() {
-  const query = 'SELECT * FROM books';
+
+async function getAll() {
+  const query: string = 'SELECT * FROM books';
   const result = await pool.query(query);
 
-  return result.rows;
-}
+  return result.rows as Book[]; // used 'as' becouse we have clear PG
+};
 
 
 /**
  * Получает все книги с их авторами из базы данных.
  *
  * @async
- * @function getAllBooksWithAuthors
+ * @function getAllWithAuthors
  * @returns {Promise<Book[]>} Массив всех книг с их авторами.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function getAllBooksWithAuthors() {
-  const query = `
+
+async function getAllWithAuthors() {
+  const query: string = `
       SELECT 
         b.id AS book_id,
         b.title,
@@ -76,7 +82,7 @@ async function getAllBooksWithAuthors() {
     `;
   const result = await pool.query(query);
 
-  return result.rows;
+  return result.rows as Book [];
 }
 
 
@@ -84,19 +90,19 @@ async function getAllBooksWithAuthors() {
  * Получает одну запись о займе книги по её ID.
  *
  * @async
- * @function getBook
+ * @function getOneById
  * @param {number} bookId - Уникальный идентификатор книги.
  * @returns {Promise<Book[]>} Объект с информацией о названии книги.
  * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
  */
-async function getBook(bookId: any) {
-  const query = 'SELECT * FROM books WHERE id = $1;';
+async function getOneById(bookId: any) {
+  const query: string = 'SELECT * FROM books WHERE id = $1;';
   const value = [bookId];
 
   const result = await pool.query(query, value);
   console.log({ result });
 
-  return result.rows[0];
+  return result.rows[0] as Book;
 }
 
 
@@ -104,13 +110,14 @@ async function getBook(bookId: any) {
  * Получает одну книгу с ее автором по ID книги.
  *
  * @async
- * @function getBookWithAuthorById
+ * @function getOneWithAuthorById
  * @param {number} bookId - Уникальный идентификатор книги.
  * @returns  {Promise<Book|null>} - Возвращает объект книги или null, если не найден.
  * @throws {Error} Если запись с таким ID не найдена или произошла ошибка в запросе.
  */
-async function getBookWithAuthorById(bookId: any) {
-  const query = `
+
+async function getOneWithAuthorById(bookId: any) {
+  const query: string = `
     SELECT 
       b.id AS book_id,
       b.title,
@@ -129,7 +136,7 @@ async function getBookWithAuthorById(bookId: any) {
     GROUP BY b.id;
   `;
   const result = await pool.query(query, [bookId]);
-  return result.rows[0];
+  return result.rows[0] as Book;
 }
 
 
@@ -137,15 +144,15 @@ async function getBookWithAuthorById(bookId: any) {
  * Создает одну книгу.
  *
  * @async
- * @function createBook
+ * @function create
  * @param {text} bookTitle - название книги.
  * @param {text} bookDescription - описание книги
  * @param {boolean} bookAvailable - наличие книги по умоляания true.
  * @returns {Promise<Book|null>} - Возвращает объект книги или null, если не найден.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function createBook(bookTitle: any, bookDescription: any, bookAvailable = true) {
+
+async function create(bookTitle: string, bookDescription: string, bookAvailable: boolean = true) {
   console.log({ bookTitle, bookDescription, bookAvailable });
   const query = 'INSERT INTO books (title, description, available) values ($1, $2, $3) RETURNING * ;';
   const values = [bookTitle, bookDescription, bookAvailable];
@@ -153,7 +160,7 @@ async function createBook(bookTitle: any, bookDescription: any, bookAvailable = 
   const result = await pool.query(query, values);
   console.log({ result });
 
-  return result.rows[0];
+  return result.rows[0] as Book;
 }
 
 
@@ -161,18 +168,18 @@ async function createBook(bookTitle: any, bookDescription: any, bookAvailable = 
  * Удаляет одну книгу по ID.
  *
  * @async
- * @function deleteBook
+ * @function remove
  * @param {number} bookId - ID книги.
  * @returns {Promise<Book|null>} Объект удалённой книги или null, если не найдена.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function deleteBook(bookId: any) {
+
+async function remove(bookId: number) {
   const query = 'DELETE FROM books WHERE id = $1  RETURNING *';
   const values = [bookId];
   const result = await pool.query(query, values);
 
-  return result.rows[0];
+  return result.rows[0] as Book;
 }
 
 
@@ -180,15 +187,15 @@ async function deleteBook(bookId: any) {
  * Обнавляет статус наличия книги по ID.
  *
  * @async
- * @function updateBookStatus
+ * @function updateStatus
  * @param {number} book_id - ID книги.
  * @param {boolean} isAvailable - статус наличия книги.
  * @returns {Promise<Book|null>} Обновлённая книга или null, если книга не найдена.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function updateBookStatus(book_id: any, isAvailable: any) {
-  const query = `
+
+async function updateStatus(book_id: number, isAvailable: boolean) {
+  const query: string = `
   UPDATE books
     SET available = $2,
         updated_at = NOW()
@@ -203,20 +210,20 @@ async function updateBookStatus(book_id: any, isAvailable: any) {
       return null;
     }
     
-    return result.rows[0];
+    return result.rows[0] as Book;
   } catch (err) {
     console.error('Error updating book status:', err);
     throw err;
   }
 }
 
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
-  getAllBooks,
-  getAllBooksWithAuthors,
-  getBook,
-  getBookWithAuthorById,
-  createBook,
-  deleteBook,
-  updateBookStatus,
+
+export {
+  getAll,
+  getAllWithAuthors,
+  getOneById,
+  getOneWithAuthorById,
+  create,
+  remove,
+  updateStatus,
 };

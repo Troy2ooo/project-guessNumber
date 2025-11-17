@@ -1,13 +1,11 @@
-
-
 import express, { Application } from "express";
 
-const authRoutes = require('./src/routes/auth-routes/auth-routes');
+import authRoutes from'./src/routes/auth-routes/auth-routes';
 import userRoutes from './src/routes/user-routes/user-routes';
-import  probeRoutes  from './src/routes/probe-routes/probe-routes';
-const booksRoutes = require('./src/routes/book-routes/book-routes');
-const authorsRoutes = require('./src/routes/authors-routes/authors-routes');
-const loansRoutes = require('./src/routes/book-routes/book-loans-routes');
+import probeRoutes  from './src/routes/probe-routes/probe-routes';
+import booksRoutes from './src/routes/book-routes/book-routes';
+import authorsRoutes from'./src/routes/authors-routes/authors-routes';
+import loansRoutes from'./src/routes/book-routes/book-loans-routes';
 
 import * as dotenv from "dotenv";
 dotenv.config();

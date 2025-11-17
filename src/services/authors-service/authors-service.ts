@@ -1,3 +1,6 @@
+import { Request, Response, } from 'express';
+import { getAll, getOneById, create, remove } from '../../models/authors-model';
+
 /**
  * @module AuthorsService
  * Сервисный модуль для работы с авторами.
@@ -8,9 +11,12 @@
  * - создания нового автора,
  * - удаления автора по ID.
  */
-// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const authorsModel = require('../../models/authors-model');
-
+// try test like
+// type Author = {
+//   id: number;
+//   name: string;
+//   bio: string;
+// };
 
 /**
  * Получает всех авторов и отправляет их в ответе.
@@ -22,16 +28,15 @@ const authorsModel = require('../../models/authors-model');
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при получении авторов.
  */
-async function getAllAuthors(req: any, res: any) {
+async function getAllAuthors(req: Request, res: Response): Promise<void> {
   try {
-    const authors = await authorsModel.getAllAuthors();
+    const authors = await getAll();
 
     res.json(authors);
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error getting authors', error: error.message });
   }
-}
+};
 
 
 /**
@@ -46,15 +51,15 @@ async function getAllAuthors(req: any, res: any) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при получении автора.
  */
-async function getAuthor(req: any, res: any) {
-  const authorId = req.params.id;
+
+async function getAuthor(req: Request, res: Response): Promise<void> {
+  const authorId = Number (req.params.id);
 
   try {
-    const author = await authorsModel.getOneAuthor(authorId);
+    const author = await getOneById (authorId);
 
     res.json(author);
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error getting author', error: error.message });
   }
 };
@@ -74,18 +79,17 @@ async function getAuthor(req: any, res: any) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при создании автора.
  */
-async function createAuthor(req: any, res: any) {
+async function createAuthor(req: Request, res: Response): Promise<void> {
   const author = {
     name: req.body.name,
     bio: req.body.bio,
   };
 
   try {
-    const newAuthor = await authorsModel.createAuthor(author.name, author.bio);
+    const newAuthor = await create (author.name, author.bio);
 
     res.json({ message: 'Author created successfully', author: newAuthor });
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error:any) {
     res.status(500).json({ message: 'Error creating author', error: error.message });
   }
 }
@@ -103,17 +107,19 @@ async function createAuthor(req: any, res: any) {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при удалении автора.
  */
-async function deleteAuthor (req: any, res: any) {
-  const authorId = req.params.id;
+async function deleteAuthor (req: Request, res: Response): Promise<void> {
+  const authorId = Number (req.params.id);
 
-  const deletedAuthor = await authorsModel.deleteAuthor (authorId);
-
+try {
+  const deletedAuthor = await remove (authorId);
   if (deletedAuthor) {
     res.json({ message: 'Author deleted successfully', author: deleteAuthor });
   } else {
     res.status(404).json({ message: 'Author not found' });
   }
-}
+} catch (error: any) {
+    res.status(500).json({ message: 'Error deleting user', error: error.message });
+  }
+};
 
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = { getAllAuthors, getAuthor, createAuthor, deleteAuthor };
+export { getAllAuthors, getAuthor, createAuthor, deleteAuthor };

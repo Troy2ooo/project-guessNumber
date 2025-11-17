@@ -1,18 +1,23 @@
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'express'.
-const express = require('express');
-// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const bookService = require('../../services/books-service/books-service');
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'router'.
+"use strict";
+import express from "express";
+import { 
+    getAllBooks,
+    getAllBooksWithAuthors,
+    getBookById,
+    getBookWithAuthor,
+    createBook,
+    deleteBook,
+    updateBookStatus 
+} from '../../services/books-service/books-service';
+
 const router = express.Router();
 
-router.get('/with-authors', bookService.getAllBooksWithAuthors);
-router.get('/with-authors/:id', bookService.getBookWithAuthor);
+router.get('/with-authors', getAllBooksWithAuthors);
+router.get('/with-authors/:id', getBookWithAuthor);
+router.get('/', getAllBooks);
+router.get('/:id', getBookById);
+router.post('/', createBook);
+router.delete('/:id', deleteBook);
+router.put('/:id/status', updateBookStatus);
 
-router.get('/', bookService.getAllBooks);
-router.get('/:id', bookService.getBookById);
-router.post('/', bookService.createBook);
-router.delete('/:id', bookService.deleteBook);
-router.put('/:id/status', bookService.updateBookStatus);
-
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = router;
+export default router;

@@ -1,3 +1,5 @@
+import {pool} from '../../db';
+
 /**
  * @module AuthorsModel
  * Модуль для работы с таблицей `authors` в базе данных.
@@ -8,8 +10,12 @@
  * - создания нового автора,
  * - удаления автора по ID.
  */
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'pool'.
-const pool = require('../../db');
+
+type Author = {
+  id: number;
+  name: string;
+  bio: string;
+};
 
 
 /**
@@ -20,13 +26,13 @@ const pool = require('../../db');
  * @returns {Promise<Object[]>} Массив объектов авторов.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function getAllAuthors() {
-  const query = 'SELECT * FROM authors';
+
+async function getAll() {
+  const query: string = 'SELECT * FROM authors';
   const result = await pool.query(query);
 
-  return result.rows;
-}
+  return result.rows as Author [];
+};
 
 
 /**
@@ -38,12 +44,12 @@ async function getAllAuthors() {
  * @returns {Promise<Object>} Объект автора.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-async function getOneAuthor(authorId: any) {
-  const query = 'SELECT * FROM authors WHERE id = $1;';
+async function getOneById(authorId: number) {
+  const query: string = 'SELECT * FROM authors WHERE id = $1;';
   const value = [authorId];
   const result = await pool.query(query, value);
 
-  return result.rows[0];
+  return result.rows[0] as Author;
 }
 
 
@@ -57,13 +63,13 @@ async function getOneAuthor(authorId: any) {
  * @returns {Promise<Object>} Объект созданного автора.
  * @throws {Error} Если произошла ошибка при создании автора.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function createAuthor(authorName: any, authorBio: any) {
-  const query = 'INSERT INTO authors (name, bio) values ($1, $2) RETURNING * ;';
+
+async function create (authorName: string, authorBio: string) {
+  const query: string = 'INSERT INTO authors (name, bio) values ($1, $2) RETURNING * ;';
   const values = [authorName, authorBio];
   const result = await pool.query(query, values);
 
-  return result.rows[0];
+  return result.rows[0] as Author;
 }
 
 
@@ -76,14 +82,13 @@ async function createAuthor(authorName: any, authorBio: any) {
  * @returns {Promise<Object>} Объект удаленного автора.
  * @throws {Error} Если произошла ошибка при удалении автора.
  */
-// @ts-expect-error TS(2393): Duplicate function implementation.
-async function deleteAuthor(authorId: any) {
-  const query = 'DELETE FROM authors WHERE id = $1  RETURNING *';
+
+async function remove (authorId: number) {
+  const query: string = 'DELETE FROM authors WHERE id = $1  RETURNING *';
   const values = [authorId];
   const result = await pool.query(query, values);
 
-  return result.rows[0];
+  return result.rows[0] as Number;
 }
 
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = { getAllAuthors, getOneAuthor, createAuthor, deleteAuthor };
+export { getAll, getOneById, create, remove };
