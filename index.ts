@@ -1,5 +1,4 @@
 import express, { Application } from "express";
-
 import authRoutes from'./src/routes/auth-routes/auth-routes';
 import userRoutes from './src/routes/user-routes/user-routes';
 import probeRoutes  from './src/routes/probe-routes/probe-routes';
