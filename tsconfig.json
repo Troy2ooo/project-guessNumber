@@ -1,7 +1,9 @@
 {
-  "include": ["src"],
+  "include": ["src", "index.ts", "db.ts"],
   "compilerOptions": {
-    "target": "es2020",
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
     "module": "commonjs",
     "lib": ["es2020"],
     "allowJs": true,

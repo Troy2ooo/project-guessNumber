@@ -1,7 +1,6 @@
-// require - функция для подключения модулей. В данном случае она подключает модуль db.
-
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'db'.
-const db = require('../../../db');
+import { Request, Response } from "express";
+import {pool} from'../../../db';
+import router from '../../routes/auth-routes/auth-routes';
 
 // pool - это объект, который позволяет приложению управлять несколькими соединениями с базой данных
 
@@ -10,23 +9,13 @@ const db = require('../../../db');
  * @param req  
  * @param res
  */
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getTime'.
-function getTime(req: any, res: any) {
-  db.query('SELECT NOW()', (err: any, result: any) => {
+async function getTime(req: Request, res: Response) {
+  pool.query('SELECT NOW()', (err: any, result: any) => {
     if (err) {
       return res.status(500).send(err.toString());
     }
     res.send(result.rows);
   });
-}
+};
 
-// @ts-expect-error TS(2304): Cannot find name 'exports'.
-exports.getTime = getTime;
-
-// `SELECT * FROM users WHERE id = ${userId}`
-
-// {
-//   "id": number,
-//   "name": text,
-//   "create_at": Date
-// }
+export { getTime }

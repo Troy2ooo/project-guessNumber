@@ -65,7 +65,7 @@ type Token = {
 
   async function deleteRefreshToken(token: string): Promise<Token> {
     const query:string = `DELETE FROM refresh_tokens WHERE token = $1`;
-    const result = await db.query(query, [token]);
+    const result = await pool.query(query, [token]);
     return result.rows[0] as Token;
   };
 

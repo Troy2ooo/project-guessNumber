@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { updateMail, update, remove, getAll, create, getOneById, getOneByName } from '../../models/user-model';
+import bcrypt from 'bcryptjs';
 
 
 
@@ -16,7 +17,6 @@ import { updateMail, update, remove, getAll, create, getOneById, getOneByName } 
  * - обновление информации пользователя,
  * - обновление электронной почты пользователя.
  */
-const bcrypt = require('bcryptjs');
 
 type User = {
   id: number;
