@@ -4,9 +4,8 @@
   "description": "\"Онлайн библиотека\".",
   "main": "test.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start:prod": "node dist/index.js",
     "start:dev": "nodemon --exec ts-node index.ts"
   },
   "repository": {
@@ -46,6 +45,7 @@
     "globals": "^16.4.0",
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
     "ts-migrate": "^0.1.35",

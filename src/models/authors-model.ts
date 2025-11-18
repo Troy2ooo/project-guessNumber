@@ -1,9 +1,9 @@
-import {pool} from '../../db';
+import { pool } from '../../db';
 
 /**
  * @module AuthorsModel
  * Модуль для работы с таблицей `authors` в базе данных.
- * 
+ *
  * Содержит функции для:
  * - получения всех авторов,
  * - получения одного автора по ID,
@@ -17,7 +17,6 @@ type Author = {
   bio: string;
 };
 
-
 /**
  * Получает всех авторов из базы данных.
  *
@@ -27,13 +26,12 @@ type Author = {
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
 
-async function getAll() {
+async function getAll(): Promise<Author[]> {
   const query: string = 'SELECT * FROM authors';
-  const result = await pool.query(query);
+  const { rows } = await pool.query<Author>(query);
 
-  return result.rows as Author [];
-};
-
+  return rows;
+}
 
 /**
  * Получает одного автора по ID.
@@ -44,14 +42,13 @@ async function getAll() {
  * @returns {Promise<Object>} Объект автора.
  * @throws {Error} Если произошла ошибка при выполнении SQL-запроса.
  */
-async function getOneById(authorId: number) {
+async function getOneById(authorId: number): Promise<Author> {
   const query: string = 'SELECT * FROM authors WHERE id = $1;';
   const value = [authorId];
-  const result = await pool.query(query, value);
+  const { rows } = await pool.query(query, value);
 
-  return result.rows[0] as Author;
+  return rows[0] as Author;
 }
-
 
 /**
  * Создает нового автора.
@@ -64,14 +61,13 @@ async function getOneById(authorId: number) {
  * @throws {Error} Если произошла ошибка при создании автора.
  */
 
-async function create (authorName: string, authorBio: string) {
+async function create(authorName: string, authorBio: string): Promise<Author> {
   const query: string = 'INSERT INTO authors (name, bio) values ($1, $2) RETURNING * ;';
   const values = [authorName, authorBio];
-  const result = await pool.query(query, values);
+  const { rows } = await pool.query<Author>(query, values);
 
-  return result.rows[0] as Author;
+  return rows[0];
 }
-
 
 /**
  * Удаляет автора по ID.
@@ -83,12 +79,12 @@ async function create (authorName: string, authorBio: string) {
  * @throws {Error} Если произошла ошибка при удалении автора.
  */
 
-async function remove (authorId: number) {
+async function remove(authorId: number): Promise<number> {
   const query: string = 'DELETE FROM authors WHERE id = $1  RETURNING *';
   const values = [authorId];
-  const result = await pool.query(query, values);
+  const { rows } = await pool.query<Author>(query, values);
 
-  return result.rows[0] as Number;
+  return rows[0].id;
 }
 
 export { getAll, getOneById, create, remove };

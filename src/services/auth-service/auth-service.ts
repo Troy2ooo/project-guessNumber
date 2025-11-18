@@ -1,18 +1,17 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken'; 
+import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 
-import { getOneByName, create, getOneById } from'../../models/user-model';
+import { getOneByName, create, getOneById } from '../../models/user-model';
 
-import {  refreshToken, getRefreshToken, deleteRefreshToken, replaceRefreshToken  } from'../../models/auth-models';
+import { refreshToken, getRefreshToken, deleteRefreshToken, replaceRefreshToken } from '../../models/auth-models';
 
 import ms from 'ms';
-
 
 /**
  * @module AuthService
  * Сервисный модуль для аутентификации пользователей.
- * 
+ *
  * Содержит функции для:
  * - регистрации пользователя,
  * - логина пользователя с выдачей JWT,
@@ -20,20 +19,19 @@ import ms from 'ms';
  */
 
 const JWT_SECRET: string = process.env.JWT_SECRET || 'dev_secret';
-const SALT_ROUNDS: number = parseInt(process.env.BCRYPT_SALT_ROUNDS ?? "10", 10);
+const SALT_ROUNDS: number = parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '10', 10);
 const JWT_REFRESH_SECRET: string = process.env.JWT_REFRESH_SECRET || 'refresh_secret';
 const ACCESS_TOKEN_TTL = (process.env.ACCESS_TOKEN_TTL || '2h') as TTL;
 const REFRESH_TOKEN_TTL = (process.env.REFRESH_TOKEN_TTL || '7d') as TTL;
 
-
 type TTL = `${number}h` | `${number}d` | `${number}m`;
 
-type Token = {
-  id: number;
-  user_id: number;
-  token: string;
-  expires_at: Date;
-};
+// type Token = {
+//   id: number;
+//   user_id: number;
+//   token: string;
+//   expires_at: Date;
+// };
 
 type TokenPayload = {
   id: number;
@@ -80,7 +78,7 @@ function generateRefreshToken(payload: TokenPayload): string {
  */
 async function verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
   return bcrypt.compare(plainPassword, hashedPassword); // сравниваем пароль и хэш и возвращает true или false, поэтому boolean
-};
+}
 
 /**
  * Обновляет токены при истечении access-токена
@@ -89,7 +87,7 @@ async function verifyPassword(plainPassword: string, hashedPassword: string): Pr
  */
 async function refreshAccessToken(req: Request, res: Response): Promise<Response> {
   try {
-    const { refreshToken } = req.body;
+    const { refreshToken }: { refreshToken: string } = req.body;
 
     if (!refreshToken) {
       return res.status(400).json({ error: 'refreshToken is required' });
@@ -123,7 +121,7 @@ async function refreshAccessToken(req: Request, res: Response): Promise<Response
 
     return res.status(403).json({ error: 'Invalid or expired refresh token' });
   }
-};
+}
 
 /**
  * Проверяет access-токен
@@ -136,8 +134,7 @@ function verifyAccessToken(token: string): JwtPayload | null {
     // @ts-expect-error TS(2554): Expected 0-1 arguments, but got 2.
     throw new Error('Invalid or expired access token', err.message);
   }
-};
-
+}
 
 /**
  * Регистрирует нового пользователя.
@@ -149,7 +146,7 @@ function verifyAccessToken(token: string): JwtPayload | null {
  * @returns {Promise<void>} Отправляет JSON с данными нового пользователя.
  * @throws {Error} Если произошла ошибка при регистрации или пользователь уже существует.
  */
-async function registerUser(req: Request, res: Response): Promise<Response>  {
+async function registerUser(req: Request, res: Response): Promise<Response> {
   try {
     const { username, email, password, role } = req.body;
 
@@ -184,7 +181,7 @@ async function registerUser(req: Request, res: Response): Promise<Response>  {
     console.error('registerUser error', err);
     return res.status(500).json({ error: 'Server error' });
   }
-};
+}
 
 /**
  * Авторизует пользователя и выдает JWT-токен.
@@ -202,44 +199,40 @@ async function registerUser(req: Request, res: Response): Promise<Response>  {
  * @param req
  * @param res
  */
-async function loginUser(req: Request, res: Response): Promise<Response>  {
+async function loginUser(req: Request, res: Response): Promise<Response> {
   try {
     const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ error: 'username and password are required' });
     }
-    const user = await getOneByName (username);
+    const user = await getOneByName(username);
     if (!user || !user.password_hash) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
-     // Проверяем пароль
+    // Проверяем пароль
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
-    
-// Формируем полезную нагрузку токена
+
+    // Формируем полезную нагрузку токена
     const payload = { id: user.id, username: user.username, role: user.role };
     // Генерируем токены
     const accToken = jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_TTL });
     const refToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_TTL });
     // Сохраняем refresh-токен в базу
-   // --- обрабатываем TTL ---
+    // --- обрабатываем TTL ---
     const expiresAt = new Date(Date.now() + ms(REFRESH_TOKEN_TTL));
-    await refreshToken(user.id, refToken, expiresAt.toISOString()); // PostgreSQL не понимает «объект Date». toISOString() - метод объекта Date, Берёт время внутри твоего Date. 
+    await refreshToken(user.id, refToken, expiresAt.toISOString()); // PostgreSQL не понимает «объект Date». toISOString() - метод объекта Date, Берёт время внутри твоего Date.
     // Конвертирует в универсальное UTC-время. Возвращает строку формата ISO-8601
 
-    return res.json({ message: 'Вход успешен', 
-      accToken,
-      refToken,
-      expiresIn: ACCESS_TOKEN_TTL,
-    });
+    return res.json({ message: 'Вход успешен', accToken, refToken, expiresIn: ACCESS_TOKEN_TTL });
   } catch (err) {
     console.error('loginUser error', err);
     return res.status(500).json({ error: 'Server error' });
   }
-};
+}
 
 /**
  * Возвращает профиль текущего пользователя.
@@ -251,7 +244,7 @@ async function loginUser(req: Request, res: Response): Promise<Response>  {
  * @returns {Promise<void>} Отправляет JSON с данными профиля пользователя.
  * @throws {Error} Если пользователь не найден или произошла ошибка сервера.
  */
-async function getProfile(req: AuthenticatedRequest, res: Response): Promise<Response>{
+async function getProfile(req: AuthenticatedRequest, res: Response): Promise<Response> {
   try {
     if (!req.user) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -277,9 +270,13 @@ async function getProfile(req: AuthenticatedRequest, res: Response): Promise<Res
   }
 }
 
-export { registerUser, loginUser, getProfile, 
+export {
+  registerUser,
+  loginUser,
+  getProfile,
   generateAccessToken,
   generateRefreshToken,
   verifyPassword,
   refreshAccessToken,
-  verifyAccessToken };
+  verifyAccessToken,
+};

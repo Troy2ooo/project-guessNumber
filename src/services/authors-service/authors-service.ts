@@ -1,22 +1,21 @@
-import { Request, Response, } from 'express';
+import { Request, Response } from 'express';
 import { getAll, getOneById, create, remove } from '../../models/authors-model';
 
 /**
  * @module AuthorsService
  * Сервисный модуль для работы с авторами.
- * 
+ *
  * Содержит функции для:
  * - получения всех авторов,
  * - получения одного автора по ID,
  * - создания нового автора,
  * - удаления автора по ID.
  */
-// try test like
-// type Author = {
-//   id: number;
-//   name: string;
-//   bio: string;
-// };
+
+type CreateAuthorRequestDto = {
+  name: string;
+  bio: string;
+};
 
 /**
  * Получает всех авторов и отправляет их в ответе.
@@ -36,8 +35,7 @@ async function getAllAuthors(req: Request, res: Response): Promise<void> {
   } catch (error: any) {
     res.status(500).json({ message: 'Error getting authors', error: error.message });
   }
-};
-
+}
 
 /**
  * Получает одного автора по ID и отправляет его в ответе.
@@ -53,18 +51,16 @@ async function getAllAuthors(req: Request, res: Response): Promise<void> {
  */
 
 async function getAuthor(req: Request, res: Response): Promise<void> {
-  const authorId = Number (req.params.id);
+  const authorId = Number(req.params.id);
 
   try {
-    const author = await getOneById (authorId);
+    const author = await getOneById(authorId);
 
     res.json(author);
   } catch (error: any) {
     res.status(500).json({ message: 'Error getting author', error: error.message });
   }
-};
-
-
+}
 
 /**
  * Создает нового автора и отправляет объект созданного автора в ответе.
@@ -80,20 +76,19 @@ async function getAuthor(req: Request, res: Response): Promise<void> {
  * @throws {Error} Если произошла ошибка при создании автора.
  */
 async function createAuthor(req: Request, res: Response): Promise<void> {
-  const author = {
+  const author: CreateAuthorRequestDto = {
     name: req.body.name,
     bio: req.body.bio,
   };
 
   try {
-    const newAuthor = await create (author.name, author.bio);
+    const newAuthor = await create(author.name, author.bio);
 
     res.json({ message: 'Author created successfully', author: newAuthor });
-  } catch (error:any) {
+  } catch (error: any) {
     res.status(500).json({ message: 'Error creating author', error: error.message });
   }
 }
-
 
 /**
  * Удаляет автора по ID и отправляет объект удаленного автора в ответе.
@@ -107,19 +102,20 @@ async function createAuthor(req: Request, res: Response): Promise<void> {
  * @returns {Promise<void>}
  * @throws {Error} Если произошла ошибка при удалении автора.
  */
-async function deleteAuthor (req: Request, res: Response): Promise<void> {
-  const authorId = Number (req.params.id);
+async function deleteAuthor(req: Request, res: Response): Promise<void> {
+  const authorId = Number(req.params.id);
 
-try {
-  const deletedAuthor = await remove (authorId);
-  if (deletedAuthor) {
-    res.json({ message: 'Author deleted successfully', author: deleteAuthor });
-  } else {
-    res.status(404).json({ message: 'Author not found' });
-  }
-} catch (error: any) {
+  try {
+    const deletedAuthor = await remove(authorId);
+
+    if (deletedAuthor) {
+      res.json({ message: 'Author deleted successfully', authorId: deletedAuthor });
+    } else {
+      res.status(404).json({ message: 'Author not found' });
+    }
+  } catch (error: any) {
     res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
-};
+}
 
 export { getAllAuthors, getAuthor, createAuthor, deleteAuthor };

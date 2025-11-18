@@ -21,7 +21,11 @@ import { getAll,
  * - обновления статуса доступности книги.
  */
 
-
+type BookCreateRequestDto = {
+  title: string;
+  description: string;
+  available: boolean;
+}
 
 
 /**
@@ -60,8 +64,7 @@ async function getAllBooksWithAuthors(req: any, res: any) {
   try {
     const books = await getAllWithAuthors();
     res.json(books);
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error getting books', error: error.message });
   }
 }
@@ -85,8 +88,7 @@ async function getBookById(req: any, res: any) {
     const book = await getOneById(bookId);
 
     res.json(book);
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 }
@@ -102,7 +104,7 @@ async function getBookById(req: any, res: any) {
  * @returns {Promise<void>} Отправляет JSON с объектом книги и автором.
  * @throws {Error} Если книга не найдена или произошла ошибка сервера.
  */
-async function getBookWithAuthor(req: any, res: any) {
+async function getBookWithAuthor(req: Request, res: Response) {
   try {
     const bookId = req.params.id;
     const book = await getOneWithAuthorById(bookId);
@@ -112,8 +114,8 @@ async function getBookWithAuthor(req: any, res: any) {
     }
 
     res.json(book);
-  } catch (err) {
-    console.error('Ошибка при получении книги:', err);
+  } catch (error: any) {
+    console.error('Ошибка при получении книги:', error);
     res.status(500).json({ error: 'Ошибка при получении книги' });
   }
 }
@@ -129,8 +131,8 @@ async function getBookWithAuthor(req: any, res: any) {
  * @returns {Promise<void>} Отправляет JSON с объектом созданной книги.
  * @throws {Error} Если произошла ошибка при создании книги.
  */
-async function createBook(req: any, res: any) {
-  const book = {
+async function createBook(req: Request, res: Response) {
+  const book: BookCreateRequestDto = {
     title: req.body.title,
     description: req.body.description,
     available: req.body.available ? req.body.available : true,
@@ -140,8 +142,7 @@ async function createBook(req: any, res: any) {
     const newBook = await create(book.title, book.description, book.available);
 
     res.json({ message: 'Book created successfully', book: newBook });
-  } catch (error) {
-    // @ts-expect-error TS(2339): Property 'message' does not exist on type 'unknown... Remove this comment to see the full error message
+  } catch (error: any) {
     res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 }
@@ -156,8 +157,8 @@ async function createBook(req: any, res: any) {
  * @param {import('express').Response} res - Объект ответа Express.
  * @returns {Promise<void>} Отправляет JSON с объектом удаленной книги или сообщение об ошибке.
  */
-async function deleteBook(req: any, res: any) {
-  const bookId = req.params.id;
+async function deleteBook(req: Request, res: Response) {
+  const bookId: number = Number(req.params.id);
 
   const deletedBook = await remove(bookId);
 
@@ -180,10 +181,10 @@ async function deleteBook(req: any, res: any) {
  * @returns {Promise<void>} Отправляет JSON с обновленным объектом книги.
  * @throws {Error} Если произошла ошибка при обновлении книги.
  */
-async function updateBookStatus(req: any, res: any) {
+async function updateBookStatus(req: Request, res: Response) {
   try {
-    const bookId = req.params.id;
-    const { available } = req.body;
+    const bookId: number = Number(req.params.id);
+    const { available } = req.body as { available: boolean };
 
     if (typeof available !== 'boolean') {
       return res.status(400).json({ error: 'available must be a boolean (true/false)' });

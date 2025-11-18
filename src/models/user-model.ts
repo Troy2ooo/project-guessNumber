@@ -192,17 +192,15 @@ async function update(userId: number, fieldsToUpdate: any) {
 async function updateMail(newMail: string, userId: number) {
   const query: string = 'UPDATE users SET mail = $1 WHERE id = $2 RETURNING *';
   const values = [newMail, userId];
-  const result = await pool.query(query, values);
+  const { rows, rowCount } = await pool.query<User>(query, values);
 
-  if (result.rowCount === 0) {
+  if (rowCount === 0) {
     return null;
   }
 
-  const { password_hash, created_at, updated_at, ...updatedUser } = result.rows[0] as User;
- 
-  console.log({ password_hash, created_at, updated_at, updatedUser })
-  
-  return updatedUser;
+  console.log(`Users updated successfully: ${rows[0].username}`)  
+
+  return rows[0];
 };
 
 
